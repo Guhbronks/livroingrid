@@ -202,11 +202,13 @@ TO authenticated
 USING (true)
 WITH CHECK (true);
 
--- Valores padrão iniciais de preço
+-- Valores padrão iniciais de preço e estoque
 INSERT INTO public.configuracoes (chave, valor, descricao)
 VALUES 
     ('preco_livro', '59.90', 'Preço de venda atual do exemplar físico'),
-    ('preco_original', '89.90', 'Preço cheio de capa (riscado)')
+    ('preco_original', '89.90', 'Preço cheio de capa (riscado)'),
+    ('estoque_livros', '100', 'Quantidade de exemplares físicos disponíveis para venda'),
+    ('limitar_estoque', 'true', 'Se true, bloqueia vendas no site ao atingir 0 exemplares')
 ON CONFLICT (chave) DO NOTHING;
 
 -- ==============================================================================

@@ -1,4 +1,4 @@
-import { supabase, salvarPedido, atualizarPedido, validarCupom, obterConfiguracoes } from './supabase.js';
+import { supabase, salvarPedido, atualizarPedido, validarCupom, obterConfiguracoes, atualizarConfiguracao } from './supabase.js';
 import { gerarPixMercadoPago, inicializarCardPaymentBrick } from './mercadopago.js';
 
 // Estado global do checkout
@@ -34,7 +34,11 @@ const checkoutState = {
   presenteDestinatario: '',
   presenteMensagem: '',
   presenteEnderecoDiferente: false,
-  presenteEndereco: null
+  presenteEndereco: null,
+  estoque: {
+    livros: 100,
+    limitar: true
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -514,6 +518,45 @@ async function carregarPrecosDinamicos() {
       document.querySelectorAll('.preco-val-dinamico').forEach(el => el.innerText = inteiro);
       document.querySelectorAll('.preco-cents-dinamico').forEach(el => el.innerText = `,${centavos}`);
 
+      // Atualiza estado e badges dinâmicos de Estoque
+      if (config.estoque_livros !== undefined) {
+        checkoutState.estoque.livros = config.estoque_livros;
+        checkoutState.estoque.limitar = config.limitar_estoque === 'true';
+
+        const stockBadges = document.querySelectorAll('.stock-badge');
+        const buyBtns = document.querySelectorAll('.btn-primary.btn-full');
+
+        if (checkoutState.estoque.limitar && checkoutState.estoque.livros <= 0) {
+          stockBadges.forEach(badge => {
+            badge.innerHTML = '<span class="stock-dot" style="background:#dc2626; box-shadow:0 0 8px #dc2626;"></span> <strong style="color:#dc2626;">Estoque Esgotado</strong> — Aguardando nova remessa';
+          });
+          buyBtns.forEach(btn => {
+            btn.innerText = '🔴 ESTOQUE ESGOTADO';
+            btn.disabled = true;
+            btn.style.opacity = '0.65';
+            btn.style.cursor = 'not-allowed';
+          });
+        } else if (checkoutState.estoque.limitar && checkoutState.estoque.livros <= 10) {
+          stockBadges.forEach(badge => {
+            badge.innerHTML = `<span class="stock-dot" style="background:#d97706; box-shadow:0 0 8px #d97706;"></span> <strong style="color:#d97706;">ÚLTIMAS UNIDADES!</strong> Apenas ${checkoutState.estoque.livros} exemplar(es) em estoque`;
+          });
+          buyBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+          });
+        } else {
+          stockBadges.forEach(badge => {
+            badge.innerHTML = '<span class="stock-dot"></span> Em estoque — envio imediato';
+          });
+          buyBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+          });
+        }
+      }
+
       // Atualiza opções do select de quantidade
       const selectQty = document.getElementById('clientQty');
       if (selectQty) {
@@ -724,6 +767,10 @@ export function updateCheckoutCalculations() {
 }
 
 export function openCheckout() {
+  if (checkoutState.estoque.limitar && checkoutState.estoque.livros <= 0) {
+    alert('Desculpe! O estoque de exemplares está temporariamente esgotado. Por favor, tente novamente mais tarde.');
+    return;
+  }
   const m = document.getElementById('checkoutModal');
   if (m) {
     m.classList.add('open');
@@ -748,6 +795,12 @@ export function goToStep1() {
 
 export function goToStep2(e) {
   if (e) e.preventDefault();
+
+  // Validação de saldo de estoque
+  if (checkoutState.estoque.limitar && checkoutState.quantidade > checkoutState.estoque.livros) {
+    alert(`A quantidade selecionada (${checkoutState.quantidade} exemplares) é maior do que o estoque disponível (${checkoutState.estoque.livros} unidades). Por favor, ajuste a quantidade.`);
+    return;
+  }
 
   // Coleta dados dos inputs
   checkoutState.cliente.nome = document.getElementById('clientName').value.trim();
@@ -942,6 +995,13 @@ export async function confirmAndGoToPayment() {
     checkoutState.orderId = pedidoCriado.id;
     if (pedidoCriado.numero_pedido) {
       checkoutState.orderNumber = `TB-${pedidoCriado.numero_pedido}`;
+    }
+
+    // Baixa automática de estoque
+    if (checkoutState.estoque.limitar && checkoutState.estoque.livros > 0) {
+      const novoEstoque = Math.max(0, checkoutState.estoque.livros - checkoutState.quantidade);
+      checkoutState.estoque.livros = novoEstoque;
+      atualizarConfiguracao('estoque_livros', novoEstoque.toString()).catch(e => console.warn('Aviso ao dar baixa de estoque:', e));
     }
   }
 

@@ -361,7 +361,9 @@ export async function obterConfiguracoes() {
       console.warn('Configurações não carregadas, usando padrões locais.');
       return {
         preco_livro: 59.90,
-        preco_original: 89.90
+        preco_original: 89.90,
+        estoque_livros: 100,
+        limitar_estoque: 'true'
       };
     }
 
@@ -372,13 +374,17 @@ export async function obterConfiguracoes() {
 
     return {
       preco_livro: parseFloat(map.preco_livro) || 59.90,
-      preco_original: parseFloat(map.preco_original) || 89.90
+      preco_original: parseFloat(map.preco_original) || 89.90,
+      estoque_livros: map.estoque_livros !== undefined ? parseInt(map.estoque_livros, 10) : 100,
+      limitar_estoque: map.limitar_estoque !== undefined ? map.limitar_estoque : 'true'
     };
   } catch (err) {
     console.warn('Exceção ao obter configurações:', err);
     return {
       preco_livro: 59.90,
-      preco_original: 89.90
+      preco_original: 89.90,
+      estoque_livros: 100,
+      limitar_estoque: 'true'
     };
   }
 }

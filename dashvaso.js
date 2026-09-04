@@ -977,11 +977,13 @@ export async function excluirCupomHandler(id, codigo) {
 }
 
 /* ═════════════════════════════════════════════
-   GESTÃO DE PREÇO DO LIVRO E PROMOÇÕES
+   GESTÃO DE PREÇO DO LIVRO, ESTOQUE E PROMOÇÕES
 ════════════════════════════════════════════════ */
 export async function carregarPrecosAdmin() {
   const inputAtual = document.getElementById('inputPrecoAtual');
   const inputOriginal = document.getElementById('inputPrecoOriginal');
+  const inputEstoque = document.getElementById('inputEstoqueAtual');
+  const checkLimitar = document.getElementById('checkLimitarEstoque');
   const feedback = document.getElementById('precoFeedback');
   if (feedback) feedback.style.display = 'none';
 
@@ -989,8 +991,10 @@ export async function carregarPrecosAdmin() {
     const configs = await obterConfiguracoes();
     if (inputAtual) inputAtual.value = configs.preco_livro.toFixed(2);
     if (inputOriginal) inputOriginal.value = configs.preco_original.toFixed(2);
+    if (inputEstoque) inputEstoque.value = configs.estoque_livros !== undefined ? configs.estoque_livros : 100;
+    if (checkLimitar) checkLimitar.checked = configs.limitar_estoque === 'true';
   } catch (err) {
-    console.error('Erro ao carregar preços no admin:', err);
+    console.error('Erro ao carregar preços e estoque no admin:', err);
   }
 }
 
@@ -998,20 +1002,29 @@ export async function salvarPrecoLivro(e) {
   e.preventDefault();
   const inputAtual = document.getElementById('inputPrecoAtual');
   const inputOriginal = document.getElementById('inputPrecoOriginal');
+  const inputEstoque = document.getElementById('inputEstoqueAtual');
+  const checkLimitar = document.getElementById('checkLimitarEstoque');
   const feedback = document.getElementById('precoFeedback');
   const btn = document.getElementById('btnSalvarPreco');
 
   const precoAtual = parseFloat(inputAtual.value);
   const precoOriginal = parseFloat(inputOriginal.value);
+  const estoqueAtual = parseInt(inputEstoque?.value || '0', 10);
+  const limitarEstoque = checkLimitar?.checked ? 'true' : 'false';
 
   if (isNaN(precoAtual) || precoAtual <= 0) {
     alert('Digite um preço atual válido.');
     return;
   }
 
+  if (isNaN(estoqueAtual) || estoqueAtual < 0) {
+    alert('Digite uma quantidade de estoque válida (0 ou maior).');
+    return;
+  }
+
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'Salvando novo preço...';
+    btn.innerText = 'Salvando novo preço e estoque...';
   }
 
   try {
@@ -1019,23 +1032,25 @@ export async function salvarPrecoLivro(e) {
     if (!isNaN(precoOriginal)) {
       await atualizarConfiguracao('preco_original', precoOriginal.toFixed(2));
     }
+    await atualizarConfiguracao('estoque_livros', estoqueAtual.toString());
+    await atualizarConfiguracao('limitar_estoque', limitarEstoque);
 
     if (feedback) {
       feedback.className = 'admin-feedback-msg success';
       feedback.style.display = 'block';
-      feedback.innerHTML = `✅ <strong>Preço atualizado com sucesso!</strong> O exemplar agora está configurado para R$ ${precoAtual.toFixed(2).replace('.', ',')} no site e checkout.`;
+      feedback.innerHTML = `✅ <strong>Preço e Estoque atualizados com sucesso!</strong><br>Exemplar: R$ ${precoAtual.toFixed(2).replace('.', ',')} | Estoque: <strong>${estoqueAtual} unidades</strong> (${limitarEstoque === 'true' ? 'Limite automático ativado' : 'Limite desativado'}).`;
     }
   } catch (err) {
-    console.error('Erro ao salvar preços:', err);
+    console.error('Erro ao salvar preços e estoque:', err);
     if (feedback) {
       feedback.className = 'admin-feedback-msg error';
       feedback.style.display = 'block';
-      feedback.innerText = 'Erro ao salvar novo preço. Tente novamente.';
+      feedback.innerText = 'Erro ao salvar novo preço e estoque. Tente novamente.';
     }
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerText = '💾 Salvar Alterações de Preço';
+      btn.innerText = '💾 Salvar Alterações de Preço & Estoque';
     }
   }
 }

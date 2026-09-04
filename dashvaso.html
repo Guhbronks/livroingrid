@@ -73,7 +73,7 @@
         🎟️ Cupons de Desconto
       </button>
       <button class="nav-tab" id="tabNavPrecos" onclick="trocarAbaPainel('precos')">
-        🏷️ Preço & Promoções
+        🏷️ Preço, Estoque & Promoções
       </button>
     </nav>
 
@@ -238,17 +238,21 @@
         </div>
       </div>
 
-      <!-- SEÇÃO 3: PREÇO & PROMOÇÕES -->
+      <!-- SEÇÃO 3: PREÇO, ESTOQUE & PROMOÇÕES -->
       <div id="sectionPrecos" class="admin-tab-pane" style="display: none;">
         <div class="panel-section-header">
           <div>
-            <h2>🏷️ Gestão de Preço do Livro & Promoções</h2>
-            <p class="section-desc">Altere o preço atual de venda e o valor original de tabela. O novo valor é aplicado automaticamente no site e no checkout.</p>
+            <h2>🏷️ Gestão de Preço & Controle de Estoque</h2>
+            <p class="section-desc">Gerencie o valor do exemplar e a quantidade de livros disponíveis em estoque para venda automática no site.</p>
           </div>
         </div>
 
         <div class="price-config-card">
           <form id="formPrecoLivro" onsubmit="salvarPrecoLivro(event)">
+            <h3 style="margin-top: 0; font-size: 1.05rem; color: #92400e; border-bottom: 1px solid var(--border); padding-bottom: .6rem; margin-bottom: 1rem;">
+              💰 Preços do Exemplar
+            </h3>
+
             <div class="price-config-grid">
               <div class="price-box active-price">
                 <span class="price-box-tag">Preço Ativo de Venda</span>
@@ -271,11 +275,40 @@
               </div>
             </div>
 
+            <h3 style="margin-top: 1.75rem; font-size: 1.05rem; color: #92400e; border-bottom: 1px solid var(--border); padding-bottom: .6rem; margin-bottom: 1rem;">
+              📦 Controle do Estoque Físico de Livros
+            </h3>
+
+            <div class="price-config-grid">
+              <div class="price-box" style="border-color: #fcd34d; background: #fffdf5;">
+                <span class="price-box-tag" style="background: #d97706; color: #fff;">Estoque Disponível</span>
+                <label for="inputEstoqueAtual">Quantidade de Livros em Estoque (Unidades):</label>
+                <div class="price-input-currency">
+                  <span style="font-size: 1.1rem; font-weight: 700; color: #d97706;">📚</span>
+                  <input type="number" id="inputEstoqueAtual" step="1" min="0" placeholder="100" required style="font-weight: 800; color: #78350f;">
+                </div>
+                <small>Este valor é decrementado quando vendas são confirmadas.</small>
+              </div>
+
+              <div class="price-box" style="border-color: #cbd5e1; background: #f8fafc;">
+                <span class="price-box-tag" style="background: #475569; color: #fff;">Regra de Bloqueio</span>
+                <label style="cursor: pointer; display: flex; align-items: flex-start; gap: .6rem; margin-top: .4rem;">
+                  <input type="checkbox" id="checkLimitarEstoque" checked style="width: 20px; height: 20px; accent-color: #d97706; cursor: pointer; margin-top: 2px;">
+                  <div>
+                    <strong style="display: block; color: #1e293b; font-size: .9rem;">Ativar limite automático de estoque</strong>
+                    <span style="display: block; color: #64748b; font-size: .8rem; margin-top: .2rem; line-height: 1.35;">
+                      Ao marcar esta opção, o site bloqueará novas compras caso o estoque chegue a 0, exibindo o aviso "Estoque Esgotado".
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <div id="precoFeedback" class="admin-feedback-msg" style="display: none;"></div>
 
-            <div class="price-actions-row">
+            <div class="price-actions-row" style="margin-top: 1.25rem;">
               <button type="submit" class="btn-primary-admin" id="btnSalvarPreco">
-                💾 Salvar Alterações de Preço
+                💾 Salvar Alterações de Preço & Estoque
               </button>
             </div>
           </form>

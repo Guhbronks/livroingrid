@@ -176,7 +176,10 @@ Deno.serve(async (req: Request) => {
 
     if (!mpRes.ok) {
       console.error("Erro retornado pelo Mercado Pago:", mpData);
-      const msgErro = mpData.message || mpData.cause?.[0]?.description || "Erro ao gerar PIX no Mercado Pago";
+      let msgErro = mpData.message || mpData.cause?.[0]?.description || "Erro ao gerar PIX no Mercado Pago";
+      if (msgErro.includes("Collector user without key enabled")) {
+        msgErro = "A sua conta do Mercado Pago ainda não possui uma Chave PIX cadastrada. Abra o aplicativo do Mercado Pago, vá em 'Área Pix' > 'Minhas Chaves' e cadastre ao menos uma chave (CPF, Celular ou E-mail) para ativar a geração de QR Codes.";
+      }
       return new Response(
         JSON.stringify({ sucesso: false, error: msgErro, detalhes: mpData }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
