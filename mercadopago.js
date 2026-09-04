@@ -58,9 +58,13 @@ export async function gerarPixMercadoPago(pedido) {
 
     if (error) {
       console.warn('⚠️ Falha ao invocar Edge Function criar-pagamento:', error);
+      let errorMsg = 'Servidor de pagamentos temporariamente indisponível. Tente novamente em instantes.';
+      if (error.message) {
+        errorMsg = `Falha no backend de pagamentos (${error.message}). Reimplante a Edge Function 'criar-pagamento'.`;
+      }
       return {
         sucesso: false,
-        error: 'Servidor de pagamentos temporariamente indisponível. Tente novamente em instantes.'
+        error: errorMsg
       };
     }
 

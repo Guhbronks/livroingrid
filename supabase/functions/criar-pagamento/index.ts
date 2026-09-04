@@ -25,8 +25,8 @@ Deno.serve(async (req: Request) => {
 
     if (!valorTotal || !cliente) {
       return new Response(
-        JSON.stringify({ error: "Dados incompletos do pedido ou cliente." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ sucesso: false, error: "Dados incompletos do pedido ou cliente." }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -37,7 +37,7 @@ Deno.serve(async (req: Request) => {
           sucesso: false,
           error: "O Access Token do Mercado Pago ainda não foi configurado nos segredos do Supabase (MERCADO_PAGO_ACCESS_TOKEN)."
         }),
-        { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -48,8 +48,8 @@ Deno.serve(async (req: Request) => {
     if (metodo === "cartao") {
       if (!cardFormData || !cardFormData.token) {
         return new Response(
-          JSON.stringify({ error: "Dados do cartão incompletos ou token ausente." }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ sucesso: false, error: "Dados do cartão incompletos ou token ausente." }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -85,13 +85,14 @@ Deno.serve(async (req: Request) => {
 
       if (!mpRes.ok) {
         console.error("Erro retornado pelo Mercado Pago para cartão:", mpData);
+        const msgErro = mpData.message || mpData.cause?.[0]?.description || "Erro ao autorizar cartão no Mercado Pago.";
         return new Response(
           JSON.stringify({ 
             sucesso: false, 
-            error: mpData.message || "Erro ao autorizar cartão no Mercado Pago.", 
+            error: msgErro, 
             detalhes: mpData 
           }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -164,9 +165,10 @@ Deno.serve(async (req: Request) => {
 
     if (!mpRes.ok) {
       console.error("Erro retornado pelo Mercado Pago:", mpData);
+      const msgErro = mpData.message || mpData.cause?.[0]?.description || "Erro ao gerar PIX no Mercado Pago";
       return new Response(
-        JSON.stringify({ error: "Erro ao gerar PIX no Mercado Pago", detalhes: mpData }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ sucesso: false, error: msgErro, detalhes: mpData }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -189,8 +191,8 @@ Deno.serve(async (req: Request) => {
   } catch (err: any) {
     console.error("Exceção na Edge Function criar-pagamento:", err);
     return new Response(
-      JSON.stringify({ error: "Erro interno no servidor ao processar pagamento", mensagem: err.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ sucesso: false, error: "Erro interno no servidor ao processar pagamento", mensagem: err.message }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
