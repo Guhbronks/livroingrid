@@ -131,6 +131,30 @@ export async function atualizarPedido(id, updates) {
 }
 
 /**
+ * Exclui um pedido do banco de dados (Apenas Administrador Autenticado)
+ * @param {string} id UUID do pedido
+ * @returns {Promise<{data: any, error: any}>}
+ */
+export async function excluirPedido(id) {
+  try {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao excluir pedido:', error);
+      return { data: null, error };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    console.error('Exceção ao excluir pedido:', err);
+    return { data: null, error: err };
+  }
+}
+
+/**
  * Retorna as métricas consolidadas dos pedidos para o Dashboard
  */
 export async function obterMetricas() {

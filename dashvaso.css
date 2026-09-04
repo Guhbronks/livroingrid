@@ -217,13 +217,21 @@ button, .btn-outline-admin, .btn-primary-admin, .btn-danger-admin {
 /* ══════════════════════════════
    LAYOUT PRINCIPAL
    ══════════════════════════════ */
+.admin-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
 .admin-main {
-  max-width: 1400px;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 1.75rem 1.5rem;
+  padding: 1.5rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  box-sizing: border-box;
 }
 
 /* ══════════════════════════════
@@ -388,10 +396,32 @@ button, .btn-outline-admin, .btn-primary-admin, .btn-danger-admin {
   font-weight: 600;
 }
 .table-responsive {
+  width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-warm) #f1ede7;
+  padding-bottom: 6px;
 }
+
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1ede7;
+  border-radius: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--gold-warm);
+  border-radius: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
 .orders-table {
   width: 100%;
+  min-width: 1260px;
   border-collapse: collapse;
   text-align: left;
   font-size: .83rem;
@@ -551,6 +581,15 @@ button, .btn-outline-admin, .btn-primary-admin, .btn-danger-admin {
 }
 .btn-action-print:hover {
   background: #0284c7;
+  color: #fff;
+}
+.btn-action-delete {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.25);
+  color: #dc2626;
+}
+.btn-action-delete:hover {
+  background: #dc2626;
   color: #fff;
 }
 
@@ -800,40 +839,143 @@ button, .btn-outline-admin, .btn-primary-admin, .btn-danger-admin {
   margin-top: .2rem;
 }
 
-/* ══════════════════════════════
-   REGRAS DE IMPRESSÃO (@media print)
-   ══════════════════════════════ */
+/* ══════════════════════════════════════════════
+   REGRAS UNIFICADAS E ISOLADAS DE IMPRESSÃO (@media print)
+   ══════════════════════════════════════════════ */
 @media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
   body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Oculta tudo que não for o alvo de impressão */
+  .no-print,
+  .admin-topbar,
+  .admin-nav-tabs,
+  .metrics-grid,
+  .filter-bar,
+  .orders-table-container,
+  .auth-overlay,
+  .admin-toast-container,
+  .admin-modal-header,
+  .admin-modal-footer,
+  .btn-close-modal,
+  .btn-primary-admin,
+  .btn-outline-admin,
+  #shippingTrackingModalOverlay,
+  #novoCupomModalOverlay,
+  #editModalOverlay,
+  #despachoModalOverlay {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* ═══ MODO 1: IMPRIMIR ETIQUETA CORREIOS ═══ */
+  body.printing-label #giftCardModalOverlay,
+  body:not(.printing-gift) #labelModalOverlay.open ~ #giftCardModalOverlay {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body.printing-label #labelModalOverlay,
+  body:not(.printing-gift) #labelModalOverlay.open {
+    position: static !important;
+    display: block !important;
     background: #fff !important;
     padding: 0 !important;
     margin: 0 !important;
-  }
-  .no-print, .admin-topbar, .metrics-grid, .filter-bar, .orders-table-container, .auth-overlay {
-    display: none !important;
-  }
-  .admin-wrapper {
-    display: block !important;
-  }
-  .admin-modal-overlay {
-    position: static !important;
-    display: block !important;
-    background: none !important;
-    padding: 0 !important;
-  }
-  .admin-modal {
-    box-shadow: none !important;
     border: none !important;
-    padding: 0 !important;
-    max-width: 100% !important;
+    box-shadow: none !important;
   }
-  .correios-label-sheet {
+
+  body.printing-label .label-modal-container,
+  body:not(.printing-gift) #labelModalOverlay.open .label-modal-container {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: #fff !important;
+  }
+
+  body.printing-label #correiosLabelSheet,
+  body:not(.printing-gift) #labelModalOverlay.open #correiosLabelSheet {
+    display: block !important;
+    visibility: visible !important;
     border: 2px solid #000 !important;
     box-shadow: none !important;
     width: 100% !important;
-    max-width: 105mm; /* Largura padrão etiqueta Correios */
-    margin: 0 auto;
-    page-break-inside: avoid;
+    max-width: 105mm !important;
+    margin: 4mm auto !important;
+    padding: 6mm !important;
+    background: #fff !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* ═══ MODO 2: IMPRIMIR CARTÃO DE PRESENTE COM RECADO ═══ */
+  body.printing-gift #labelModalOverlay,
+  body:not(.printing-label) #giftCardModalOverlay.open ~ #labelModalOverlay {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body.printing-gift #giftCardModalOverlay,
+  body:not(.printing-label) #giftCardModalOverlay.open {
+    position: static !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    min-height: 100vh !important;
+  }
+
+  body.printing-gift .gift-card-modal-container,
+  body:not(.printing-label) #giftCardModalOverlay.open .gift-card-modal-container {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  body.printing-gift #giftCardPrintArea,
+  body:not(.printing-label) #giftCardModalOverlay.open #giftCardPrintArea {
+    display: block !important;
+    visibility: visible !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+  }
+
+  body.printing-gift .luxury-gift-card,
+  body:not(.printing-label) #giftCardModalOverlay.open .luxury-gift-card {
+    display: block !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+    border: 2px solid #92400e !important;
+    outline: 1px dashed #d97706 !important;
+    margin: 0 auto !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #fff !important;
+    width: 140mm !important;
+    max-width: 140mm !important;
   }
 }
 
@@ -1216,50 +1358,7 @@ button, .btn-outline-admin, .btn-primary-admin, .btn-danger-admin {
   background: #b45309 !important;
 }
 
-/* ══════════════════════════════
-   ESTILOS DE IMPRESSÃO (@media print)
-   ══════════════════════════════ */
-@media print {
-  body * {
-    visibility: hidden !important;
-  }
-  #giftCardPrintArea, #giftCardPrintArea * {
-    visibility: visible !important;
-  }
-  #giftCardModalOverlay {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #fff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    z-index: 999999 !important;
-  }
-  .gift-card-modal-container {
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    background: transparent !important;
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-  .luxury-gift-card {
-    box-shadow: none !important;
-    border: 2px solid #92400e !important;
-    outline: 1px dashed #d97706 !important;
-    margin: 0 auto !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  .no-print {
-    display: none !important;
-  }
-}
+
 
 /* ══════════════════════════════
    TOAST NOTIFICATIONS (TEMPO REAL)

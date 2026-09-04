@@ -2,6 +2,7 @@ import {
   supabase, 
   listarPedidos, 
   atualizarPedido,
+  excluirPedido,
   listarCupons,
   criarCupom,
   alternarStatusCupom,
@@ -14,6 +15,7 @@ import {
 let pedidosGlobais = [];
 let pedidosFiltrados = [];
 let realtimeChannel = null;
+let currentLabelOrderId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   verificarSessao();
@@ -283,6 +285,9 @@ function renderizarTabela() {
             ` : ''}
             <button class="btn-action btn-action-print" onclick="abrirModalEtiqueta('${p.id}')" title="Imprimir Etiqueta dos Correios">
               🏷️
+            </button>
+            <button class="btn-action btn-action-delete" onclick="excluirPedidoHandler('${p.id}', '${numPedido}')" title="Excluir Pedido Definitivamente">
+              🗑️
             </button>
           </div>
         </td>
@@ -567,31 +572,101 @@ export async function salvarEdicaoPedido(e) {
 }
 
 /* ══════════════════════════════
+   EXCLUSÃO DE PEDIDOS (ADMIN)
+   ══════════════════════════════ */
+export async function excluirPedidoHandler(id, numPedido) {
+  const p = pedidosGlobais.find(item => item.id === id);
+  const nome = p ? p.cliente_nome : 'este pedido';
+  const confirmMsg = `Deseja realmente EXCLUIR o pedido ${numPedido || ''} (${nome})?\n\nEssa ação é definitiva e removerá o pedido do sistema.`;
+  if (!confirm(confirmMsg)) return;
+
+  const { error } = await excluirPedido(id);
+  if (error) {
+    alert('Erro ao excluir pedido: ' + (error.message || JSON.stringify(error)));
+    return;
+  }
+
+  exibirNotificacaoToast(`🗑️ Pedido ${numPedido || ''} excluído com sucesso!`);
+  await carregarDados();
+}
+
+export async function excluirPedidoDoModal() {
+  const id = document.getElementById('editOrderId')?.value;
+  if (!id) return;
+  const p = pedidosGlobais.find(item => item.id === id);
+  const numPedido = p ? `#TB-${p.numero_pedido || p.id.slice(0, 4).toUpperCase()}` : '';
+  fecharModalEdicao();
+  await excluirPedidoHandler(id, numPedido);
+}
+
+/* ══════════════════════════════
    MODAL DE IMPRESSÃO DA ETIQUETA CORREIOS
    ══════════════════════════════ */
 export function abrirModalEtiqueta(id) {
   const p = pedidosGlobais.find(item => item.id === id);
   if (!p) return;
 
+  currentLabelOrderId = id;
   const numPedido = `#TB-${p.numero_pedido || p.id.slice(0, 4).toUpperCase()}`;
   document.getElementById('labelModalOrderCode').innerText = numPedido;
   document.getElementById('labelModalServiceTag').innerText = (p.opcao_frete || 'REGISTRO MÓDICO').toUpperCase();
 
-  document.getElementById('labelDestNome').innerText = p.cliente_nome.toUpperCase();
-  const compl = p.complemento ? ` (${p.complemento})` : '';
-  document.getElementById('labelDestEndereco').innerText = `${p.logradouro}, nº ${p.numero}${compl}`;
-  document.getElementById('labelDestBairro').innerText = `Bairro: ${p.bairro}`;
-  document.getElementById('labelDestCidadeUf').innerText = `${p.cidade} — ${p.uf}`;
-  document.getElementById('labelDestCep').innerText = p.cep;
-  document.getElementById('labelDestTelefone').innerText = p.cliente_telefone;
+  // Tratamento inteligente de endereço para presente
+  if (p.is_presente && p.presente_endereco_diferente && p.presente_logradouro) {
+    document.getElementById('labelDestNome').innerText = (p.presente_destinatario || p.cliente_nome).toUpperCase();
+    const pCompl = p.presente_complemento ? ` (${p.presente_complemento})` : '';
+    document.getElementById('labelDestEndereco').innerText = `${p.presente_logradouro}, nº ${p.presente_numero}${pCompl}`;
+    document.getElementById('labelDestBairro').innerText = `Bairro: ${p.presente_bairro}`;
+    document.getElementById('labelDestCidadeUf').innerText = `${p.presente_cidade} — ${p.presente_uf}`;
+    document.getElementById('labelDestCep').innerText = p.presente_cep;
+  } else if (p.is_presente && p.presente_destinatario) {
+    document.getElementById('labelDestNome').innerText = `${p.presente_destinatario.toUpperCase()} (A/C ${p.cliente_nome.toUpperCase()})`;
+    const compl = p.complemento ? ` (${p.complemento})` : '';
+    document.getElementById('labelDestEndereco').innerText = `${p.logradouro}, nº ${p.numero}${compl}`;
+    document.getElementById('labelDestBairro').innerText = `Bairro: ${p.bairro}`;
+    document.getElementById('labelDestCidadeUf').innerText = `${p.cidade} — ${p.uf}`;
+    document.getElementById('labelDestCep').innerText = p.cep;
+  } else {
+    document.getElementById('labelDestNome').innerText = p.cliente_nome.toUpperCase();
+    const compl = p.complemento ? ` (${p.complemento})` : '';
+    document.getElementById('labelDestEndereco').innerText = `${p.logradouro}, nº ${p.numero}${compl}`;
+    document.getElementById('labelDestBairro').innerText = `Bairro: ${p.bairro}`;
+    document.getElementById('labelDestCidadeUf').innerText = `${p.cidade} — ${p.uf}`;
+    document.getElementById('labelDestCep').innerText = p.cep;
+  }
 
+  document.getElementById('labelDestTelefone').innerText = p.cliente_telefone;
   document.getElementById('labelDeclQtd').innerText = `${p.quantidade || 1} exemplar(es)`;
+
+  // Exibe banner de presente com recado se for presente
+  const giftBanner = document.getElementById('labelModalGiftBanner');
+  const giftDest = document.getElementById('labelGiftDestName');
+  if (p.is_presente && giftBanner) {
+    giftBanner.style.display = 'flex';
+    if (giftDest) giftDest.innerText = p.presente_destinatario || p.cliente_nome;
+  } else if (giftBanner) {
+    giftBanner.style.display = 'none';
+  }
 
   document.getElementById('labelModalOverlay').classList.add('open');
 }
 
 export function fecharModalEtiqueta() {
   document.getElementById('labelModalOverlay').classList.remove('open');
+  document.body.classList.remove('printing-label');
+}
+
+export function imprimirEtiquetaCorreios() {
+  document.body.classList.remove('printing-gift');
+  document.body.classList.add('printing-label');
+  window.print();
+}
+
+export function abrirCartaoPresenteDoModalEtiqueta() {
+  if (currentLabelOrderId) {
+    fecharModalEtiqueta();
+    abrirCartaoPresenteModal(currentLabelOrderId);
+  }
 }
 
 /* ══════════════════════════════
@@ -659,6 +734,10 @@ window.fecharModalEdicao = fecharModalEdicao;
 window.salvarEdicaoPedido = salvarEdicaoPedido;
 window.abrirModalEtiqueta = abrirModalEtiqueta;
 window.fecharModalEtiqueta = fecharModalEtiqueta;
+window.imprimirEtiquetaCorreios = imprimirEtiquetaCorreios;
+window.abrirCartaoPresenteDoModalEtiqueta = abrirCartaoPresenteDoModalEtiqueta;
+window.excluirPedidoHandler = excluirPedidoHandler;
+window.excluirPedidoDoModal = excluirPedidoDoModal;
 
 /* ═════════════════════════════════════════════
    GESTÃO DE ABAS DO PAINEL
@@ -1002,15 +1081,26 @@ export function fecharCartaoPresenteModal() {
     modal.style.display = 'none';
     modal.classList.remove('open');
   }
+  document.body.classList.remove('printing-gift');
 }
 
 export function imprimirCartaoPresente() {
+  document.body.classList.remove('printing-label');
+  document.body.classList.add('printing-gift');
   window.print();
 }
+
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('printing-label', 'printing-gift');
+});
 
 window.abrirCartaoPresenteModal = abrirCartaoPresenteModal;
 window.fecharCartaoPresenteModal = fecharCartaoPresenteModal;
 window.imprimirCartaoPresente = imprimirCartaoPresente;
+window.imprimirEtiquetaCorreios = imprimirEtiquetaCorreios;
+window.abrirCartaoPresenteDoModalEtiqueta = abrirCartaoPresenteDoModalEtiqueta;
+window.excluirPedidoHandler = excluirPedidoHandler;
+window.excluirPedidoDoModal = excluirPedidoDoModal;
 
 /* ══════════════════════════════
    ACOMPANHAMENTO DO ENVIO EM TEMPO REAL

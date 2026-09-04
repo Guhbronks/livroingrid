@@ -83,13 +83,14 @@ FOR UPDATE
 TO authenticated
 USING (true);
 
--- Bloquear DELETE para todos
+-- Permitir exclusão de pedidos APENAS para administradores autenticados
 DROP POLICY IF EXISTS "Ninguem deleta" ON public.pedidos;
-CREATE POLICY "Ninguem deleta"
+DROP POLICY IF EXISTS "Admin deleta pedidos" ON public.pedidos;
+CREATE POLICY "Admin deleta pedidos"
 ON public.pedidos
 FOR DELETE
-TO public
-USING (false);
+TO authenticated
+USING (true);
 
 -- 4. Função de Busca de Rastreio (RPC segura para consulta por telefone, e-mail ou nº do pedido)
 CREATE OR REPLACE FUNCTION public.buscar_pedido_rastreio(p_termo TEXT)

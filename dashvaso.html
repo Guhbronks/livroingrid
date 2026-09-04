@@ -411,9 +411,14 @@
           </div>
         </div>
 
-        <div class="admin-modal-footer">
-          <button type="button" class="btn-outline-admin" onclick="fecharModalEdicao()">Cancelar</button>
-          <button type="submit" class="btn-primary-admin" id="btnSalvarEdicao">Salvar Alterações</button>
+        <div class="admin-modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <button type="button" class="btn-danger-admin" onclick="excluirPedidoDoModal()" title="Excluir este pedido definitivamente do sistema">
+            🗑️ Excluir Pedido
+          </button>
+          <div style="display: flex; gap: .5rem;">
+            <button type="button" class="btn-outline-admin" onclick="fecharModalEdicao()">Cancelar</button>
+            <button type="submit" class="btn-primary-admin" id="btnSalvarEdicao">Salvar Alterações</button>
+          </div>
         </div>
       </form>
     </div>
@@ -464,9 +469,20 @@
       <div class="admin-modal-header no-print">
         <h3>🏷️ Etiqueta de Envio para os Correios</h3>
         <div>
-          <button class="btn-primary-admin" onclick="window.print()">🖨️ Imprimir Etiqueta</button>
+          <button class="btn-primary-admin" onclick="imprimirEtiquetaCorreios()">🖨️ Imprimir Etiqueta</button>
           <button class="btn-close-modal" onclick="fecharModalEtiqueta()">✕</button>
         </div>
+      </div>
+
+      <!-- BANNER DE RECADO ESPECIAL / PRESENTE -->
+      <div id="labelModalGiftBanner" class="no-print" style="display: none; background: #fffdf5; border: 1.5px solid #fde68a; border-radius: 8px; padding: .85rem 1.25rem; margin-bottom: 1rem; align-items: center; justify-content: space-between; gap: 1rem;">
+        <div>
+          <strong style="color: #b45309; display: block; font-size: .88rem;">🎁 Este pedido é um PRESENTE com recado especial!</strong>
+          <span style="font-size: .8rem; color: #78350f;">Destinatário: <strong id="labelGiftDestName"></strong></span>
+        </div>
+        <button type="button" class="btn-primary-admin" style="background: #d97706; border-color: #d97706; font-size: .8rem; padding: .45rem .85rem; white-space: nowrap;" onclick="abrirCartaoPresenteDoModalEtiqueta()">
+          🖨️ Imprimir Cartão de Mensagem
+        </button>
       </div>
 
       <!-- ÁREA IMPRIMÍVEL DA ETIQUETA -->
@@ -524,7 +540,7 @@
         <p style="font-size: .85rem; color: #666; margin-bottom: .75rem;">
           Dica: A etiqueta já está configurada com estilo específico para papel A4 ou impressora térmica.
         </p>
-        <button class="btn-primary-admin" onclick="window.print()">
+        <button class="btn-primary-admin" onclick="imprimirEtiquetaCorreios()">
           🖨️ Imprimir Agora
         </button>
       </div>
