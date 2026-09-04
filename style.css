@@ -1372,6 +1372,16 @@ strong { color: var(--text); font-weight: 700; }
   grid-template-columns: 1fr 1fr;
   gap: .75rem;
 }
+.review-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: .75rem;
+}
+@media (max-width: 540px) {
+  .review-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
 .highlight-address {
   background: #fff;
   border: 1px dashed var(--gold);

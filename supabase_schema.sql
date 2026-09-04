@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.pedidos (
     -- Dados do Comprador
     cliente_nome TEXT NOT NULL,
     cliente_email TEXT NOT NULL,
+    cliente_cpf TEXT,
     cliente_telefone TEXT NOT NULL,
     
     -- Endereço de Entrega Completo
@@ -233,8 +234,9 @@ TO authenticated
 USING (true)
 WITH CHECK (true);
 
--- Adicionar colunas de cupom e presente na tabela de pedidos se não existirem
+-- Adicionar colunas de cupom, presente e CPF na tabela de pedidos se não existirem
 ALTER TABLE public.pedidos 
+ADD COLUMN IF NOT EXISTS cliente_cpf TEXT,
 ADD COLUMN IF NOT EXISTS cupom_codigo TEXT,
 ADD COLUMN IF NOT EXISTS valor_desconto NUMERIC(10, 2) DEFAULT 0.00,
 ADD COLUMN IF NOT EXISTS is_presente BOOLEAN DEFAULT false,
@@ -311,6 +313,7 @@ BEGIN
     INSERT INTO public.pedidos (
         cliente_nome,
         cliente_email,
+        cliente_cpf,
         cliente_telefone,
         cep,
         logradouro,
@@ -343,6 +346,7 @@ BEGIN
     ) VALUES (
         p_pedido->>'cliente_nome',
         p_pedido->>'cliente_email',
+        p_pedido->>'cliente_cpf',
         p_pedido->>'cliente_telefone',
         p_pedido->>'cep',
         p_pedido->>'logradouro',

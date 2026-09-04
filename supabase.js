@@ -17,6 +17,7 @@ export async function salvarPedido(pedido) {
     const payload = {
       cliente_nome: pedido.nome,
       cliente_email: pedido.email,
+      cliente_cpf: pedido.cpf || '',
       cliente_telefone: pedido.telefone,
       cep: pedido.cep,
       logradouro: pedido.logradouro,

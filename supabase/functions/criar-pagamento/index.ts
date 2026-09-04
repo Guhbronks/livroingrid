@@ -134,6 +134,17 @@ Deno.serve(async (req: Request) => {
     }
 
     // ═══ FLUXO 2: PAGAMENTO INSTANTÂNEO COM PIX ═══
+    const rawCpf = cliente.cpf ? cliente.cpf.replace(/\D/g, "") : "";
+    if (!rawCpf || rawCpf.length !== 11) {
+      return new Response(
+        JSON.stringify({
+          sucesso: false,
+          error: "O CPF do titular do pedido é obrigatório para a geração da chave PIX no Mercado Pago."
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const mpPayload = {
       transaction_amount: Number(valorTotal),
       description: `Livro Tesouros em Vaso de Barro (${quantidade || 1}x)`,
@@ -146,7 +157,7 @@ Deno.serve(async (req: Request) => {
         last_name: cliente.nome?.split(" ").slice(1).join(" ") || "Leitor",
         identification: {
           type: "CPF",
-          number: cliente.cpf ? cliente.cpf.replace(/\D/g, "") : "00000000000"
+          number: rawCpf
         }
       }
     };

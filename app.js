@@ -9,6 +9,7 @@ const checkoutState = {
   cliente: {
     nome: '',
     email: '',
+    cpf: '',
     telefone: '',
     cep: '',
     uf: '',
@@ -272,10 +273,44 @@ async function calcFrete() {
   `;
 }
 
+/**
+ * Validação do algoritmo oficial de CPF (dígitos verificadores)
+ */
+export function validarCPF(cpf) {
+  const clean = String(cpf || '').replace(/\D/g, '');
+  if (clean.length !== 11 || /^(\d)\1{10}$/.test(clean)) return false;
+  let soma = 0, resto;
+  for (let i = 1; i <= 9; i++) soma += parseInt(clean.substring(i - 1, i), 10) * (11 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(clean.substring(9, 10), 10)) return false;
+  soma = 0;
+  for (let i = 1; i <= 10; i++) soma += parseInt(clean.substring(i - 1, i), 10) * (12 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(clean.substring(10, 11), 10)) return false;
+  return true;
+}
+
 /* ══════════════════════════════
    CHECKOUT MULTI-STEP LOGIC
    ══════════════════════════════ */
 function initCheckoutInputs() {
+  const cpfInput = document.getElementById('clientCpf');
+  if (cpfInput) {
+    cpfInput.addEventListener('input', () => {
+      let v = cpfInput.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 9) {
+        v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+      } else if (v.length > 6) {
+        v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+      } else if (v.length > 3) {
+        v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+      }
+      cpfInput.value = v;
+    });
+  }
+
   const phoneInput = document.getElementById('clientPhone');
   if (phoneInput) {
     phoneInput.addEventListener('input', () => {
@@ -717,6 +752,7 @@ export function goToStep2(e) {
   // Coleta dados dos inputs
   checkoutState.cliente.nome = document.getElementById('clientName').value.trim();
   checkoutState.cliente.email = document.getElementById('clientEmail').value.trim();
+  checkoutState.cliente.cpf = document.getElementById('clientCpf') ? document.getElementById('clientCpf').value.trim() : '';
   checkoutState.cliente.telefone = document.getElementById('clientPhone').value.trim();
   checkoutState.cliente.cep = document.getElementById('clientCep').value.trim();
   checkoutState.cliente.uf = document.getElementById('clientUf').value.trim().toUpperCase();
@@ -727,8 +763,16 @@ export function goToStep2(e) {
   checkoutState.cliente.cidade = document.getElementById('clientCidade').value.trim();
 
   // Validações básicas
-  if (!checkoutState.cliente.nome || !checkoutState.cliente.telefone || !checkoutState.cliente.cep || !checkoutState.cliente.logradouro || !checkoutState.cliente.numero) {
+  if (!checkoutState.cliente.nome || !checkoutState.cliente.email || !checkoutState.cliente.telefone || !checkoutState.cliente.cep || !checkoutState.cliente.logradouro || !checkoutState.cliente.numero) {
     alert('Por favor, preencha todos os campos obrigatórios marcados com * para entrega do livro.');
+    return;
+  }
+
+  // Validação estrita do CPF para o Mercado Pago
+  if (!checkoutState.cliente.cpf || !validarCPF(checkoutState.cliente.cpf)) {
+    alert('Por favor, digite um CPF válido. O CPF é obrigatório para emissão de pagamentos (PIX / Cartão).');
+    const cpfEl = document.getElementById('clientCpf');
+    if (cpfEl) cpfEl.focus();
     return;
   }
 
@@ -784,6 +828,9 @@ export function goToStep2(e) {
 
   // Preenche tela de conferência (Step 2)
   document.getElementById('reviewName').innerText = checkoutState.cliente.nome;
+  if (document.getElementById('reviewCpf')) {
+    document.getElementById('reviewCpf').innerText = checkoutState.cliente.cpf;
+  }
   document.getElementById('reviewPhone').innerText = checkoutState.cliente.telefone;
   document.getElementById('reviewEmail').innerText = checkoutState.cliente.email;
 
@@ -859,6 +906,7 @@ export async function confirmAndGoToPayment() {
   const payload = {
     nome: checkoutState.cliente.nome,
     email: checkoutState.cliente.email,
+    cpf: checkoutState.cliente.cpf,
     telefone: checkoutState.cliente.telefone,
     cep: checkoutState.cliente.cep,
     logradouro: checkoutState.cliente.logradouro,
@@ -994,6 +1042,7 @@ export function switchPaymentMethod(method) {
         quantidade: checkoutState.quantidade,
         nome: checkoutState.cliente.nome,
         email: checkoutState.cliente.email,
+        cpf: checkoutState.cliente.cpf,
         telefone: checkoutState.cliente.telefone,
         cep: checkoutState.cliente.cep,
         logradouro: checkoutState.cliente.logradouro,
@@ -1041,6 +1090,7 @@ export async function solicitarGeracaoPix() {
       numeroPedido: checkoutState.orderNumber,
       nome: checkoutState.cliente.nome,
       email: checkoutState.cliente.email,
+      cpf: checkoutState.cliente.cpf,
       telefone: checkoutState.cliente.telefone,
       cep: checkoutState.cliente.cep,
       logradouro: checkoutState.cliente.logradouro,

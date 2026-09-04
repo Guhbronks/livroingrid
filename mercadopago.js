@@ -44,6 +44,7 @@ export async function gerarPixMercadoPago(pedido) {
         cliente: {
           nome: pedido.nome,
           email: pedido.email,
+          cpf: pedido.cpf || pedido.cliente?.cpf || '',
           telefone: pedido.telefone,
           cep: pedido.cep,
           logradouro: pedido.logradouro,
