@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(import.meta.dirname, 'index.html'),
-        dashvaso: resolve(import.meta.dirname, 'dashvaso.html'),
-        rastreio: resolve(import.meta.dirname, 'rastreio.html')
+        main: resolve(__dirname, 'index.html'),
+        dashvaso: resolve(__dirname, 'dashvaso.html'),
+        rastreio: resolve(__dirname, 'rastreio.html')
       }
     }
   }

@@ -21,6 +21,9 @@
     "url": "https://github.com/Guhbronks/livroingrid/issues"
   },
   "homepage": "https://github.com/Guhbronks/livroingrid#readme",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "devDependencies": {
     "vite": "^8.2.2"
   },
