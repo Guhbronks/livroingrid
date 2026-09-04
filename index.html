@@ -11,6 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
+
+  <!-- MERCADO PAGO SDK OFICIAL V2 -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
 
@@ -24,6 +27,7 @@
         <a href="#depoimentos">Depoimentos</a>
         <a href="#para-quem">Para Quem</a>
         <a href="#faq">Dúvidas</a>
+        <a href="rastreio.html" style="color: var(--gold); font-weight: 700;">📦 Acompanhar Pedido</a>
       </nav>
       <a href="#oferta" class="nav-cta">Garantir Meu Exemplar</a>
       <button class="nav-hamburger" id="hamburger" aria-label="Menu">
@@ -39,7 +43,8 @@
     <a href="#depoimentos" class="mobile-link">Depoimentos</a>
     <a href="#para-quem" class="mobile-link">Para Quem</a>
     <a href="#faq" class="mobile-link">Dúvidas Frequentes</a>
-    <a href="#oferta" class="mobile-link cta">Garantir Meu Exemplar — R$ 59,90</a>
+    <a href="rastreio.html" class="mobile-link" style="color: var(--gold); font-weight: 700;">📦 Acompanhar Meu Pedido</a>
+    <a href="#oferta" class="mobile-link cta">Garantir Meu Exemplar — <span class="preco-livro-dinamico">R$ 59,90</span></a>
   </div>
 
   <main>
@@ -53,15 +58,15 @@
         <div class="hero-visual">
           <img src="LIVRO - INGRID PEDROSO.png" alt="Livro Tesouros em Vaso de Barro — Ingrid Oliveira Pedroso" class="hero-book">
         </div>
-        <p class="hero-desc"><strong>Onde Deus estava quando o seu mundo desabou?</strong> Descubra como a pior perda da sua vida pode se tornar o testemunho que vai restaurar a sua família. Não é teoria teológica — é a história real de quem sobreviveu ao silêncio de Deus.</p>
+        <p class="hero-desc"><strong>E se aquilo que parecia ser o fim da sua história fosse justamente o lugar onde Deus começaria a revelar os Seus maiores tesouros?</strong> Não é teoria teológica — é a história real de uma família que descobriu que Deus não despreza os pedaços. Ele os recolhe, restaura e transforma feridas em lugares onde Sua graça pode ser vista.</p>
         <div class="hero-actions">
-          <a href="#oferta" class="btn-primary">Quero Meu Exemplar <span class="price-chip">R$ 59,90</span></a>
+          <a href="#oferta" class="btn-primary">Quero Meu Exemplar <span class="price-chip preco-livro-dinamico">R$ 59,90</span></a>
           <a href="#sobre" class="btn-ghost">Conhecer a Obra ↓</a>
         </div>
         <div class="hero-trust">
           <span>✓ Livro físico impresso</span>
+          <span>✓ Postagem em até 48h úteis</span>
           <span>✓ Envio para todo o Brasil</span>
-          <span>✓ + Bônus digital incluso</span>
         </div>
       </div>
     </section>
@@ -70,12 +75,13 @@
     <section class="section" id="sobre">
       <div class="container-narrow">
         <span class="tag">Sobre a Obra</span>
-        <h2 class="section-title">"A rachadura não é o fim.<br>É por onde a luz entra."</h2>
-        <p class="section-lead">Quando o diagnóstico chega sem aviso. Quando a pessoa que você ama parte sem despedida. Quando o silêncio de Deus pesa mais do que qualquer resposta. Existe algo dentro de você que ainda não foi revelado.</p>
-        <p class="section-body">Assim como um vaso de barro carrega algo precioso dentro de si, <strong>sua fragilidade também pode revelar tesouros que permaneciam escondidos.</strong> Este livro é para quem já orou sem ouvir resposta, já chorou sozinho no escuro — e mesmo assim decidiu acreditar.</p>
+        <h2 class="section-title">"Essa poderia ter sido apenas uma história de sofrimento.<br>Mas Deus entrou nela."</h2>
+        <p class="section-lead">Dores que chegaram cedo demais. Uma gravidez aos 15 anos. Uma filha que nasceu enfrentando uma grave condição de saúde. Um casamento ferido. Momentos em que parecia não haver saída.</p>
+        <p class="section-body">Quando colocamos nas mãos de Deus aquilo que está quebrado, Ele não despreza os pedaços. <strong>Ele os recolhe. Ele restaura. Ele dá novo sentido.</strong> E Ele transforma feridas em lugares onde Sua graça pode ser vista.<br><br>
+        Talvez o maior milagre não seja Deus esconder as rachaduras do vaso — talvez seja <strong>fazer Sua luz atravessar justamente por elas.</strong></p>
         <div class="scripture">
           <span class="scripture-ref">2 Coríntios 4:7</span>
-          <p class="scripture-text">"Temos, porém, este tesouro em vasos de barro, para que a excelência do poder seja de Deus e não de nós."</p>
+          <p class="scripture-text">"Temos, porém, este tesouro em vasos de barro, para que a excelência do poder seja de Deus, e não de nós."</p>
         </div>
       </div>
     </section>
@@ -88,15 +94,16 @@
             <img src="assets/autora.jpg" alt="Ingrid Oliveira Pedroso — Autora" class="author-photo" width="400" height="533">
             <div class="author-card">
               <strong>Ingrid Oliveira Pedroso</strong>
-              <span>Autora & Testemunha</span>
+              <span>Autora & Pastora</span>
             </div>
           </div>
           <div class="author-text">
-            <span class="tag">A Autora</span>
-            <h2 class="section-title">Ela não escreveu sobre a dor dos outros.<br>Escreveu sobre a dela.</h2>
-            <p class="section-body"><strong>Ingrid viveu na pele o silêncio de Deus</strong> durante perdas que abalaram a estrutura da sua família. Este livro nasceu não de uma mesa de estudo, mas de noites em que a fé precisou ser escolhida — mesmo sem respostas. Cada capítulo carrega o peso de quem já sentou no chão e precisou decidir se levantava ou desistia.</p>
+            <span class="tag">A Autora & Ministério</span>
+            <h2 class="section-title">Este livro não é apenas sobre o que Deus fez no passado.<br>É sobre o que Ele é capaz de fazer com uma vida entregue.</h2>
+            <p class="section-body">Depois de restaurar essa história, Deus chamou <strong>Ingrid e Daiane</strong> para acolherem famílias feridas e levarem a mesma esperança que um dia as alcançou. E aquilo que poderia ter sido motivo de vergonha ou desistência <strong>tornou-se testemunho.</strong><br><br>
+            Deus não precisa que a sua história tenha sido perfeita para escrever um novo capítulo. Ele precisa apenas que você permita que ela chegue às Suas mãos.</p>
             <blockquote class="author-quote">
-              "Tesouros em Vasos de Barro é o testemunho de uma família que viu Deus dar um novo significado às perdas, aos processos e às marcas de uma geração. Porque, às vezes, enxergamos apenas o barro, mas Deus sabe exatamente onde estão os tesouros."
+              "Sua história não precisa terminar onde você foi quebrado. Entregue o barro ao Oleiro. Você ainda não viu tudo o que Ele é capaz de fazer com ele."
             </blockquote>
             <a href="#oferta" class="btn-primary">Garantir Meu Exemplar →</a>
           </div>
@@ -109,39 +116,27 @@
       <div class="container">
         <div class="text-center mb-lg">
           <span class="tag">O que dizem os leitores</span>
-          <h2 class="section-title">Histórias reais de quem leu<br>e foi transformado</h2>
+          <h2 class="section-title">Histórias reais de quem leu<br>e foi tocado no coração</h2>
         </div>
-        <div class="testimonials-grid">
-          <div class="testimonial">
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">"Eu estava prestes a desistir do meu casamento após a nossa perda. O capítulo 4 deste livro me deu forças para continuar. <strong>Meu marido e eu lemos juntos, chorando, e pela primeira vez em meses conseguimos conversar sobre a nossa dor.</strong>"</p>
-            <div class="testimonial-author">
-              <div class="testimonial-avatar">M</div>
-              <div>
-                <strong>Maria Fernanda S.</strong>
-                <span>São Paulo, SP</span>
+        <div class="testimonials-grid single-testimonial">
+          <!-- DEPOIMENTO REAL INSTAGRAM COM IMAGEM -->
+          <div class="testimonial testimonial-instagram">
+            <div class="testimonial-ig-header">
+              <div class="ig-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Depoimento Real no Instagram
               </div>
+              <div class="testimonial-stars">★★★★★</div>
             </div>
-          </div>
-          <div class="testimonial">
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">"Perdi meu pai há 8 meses. Os domingos viraram o dia mais difícil da semana — a cadeira vazia na mesa. Esse livro não tirou a dor, mas <strong>me mostrou que Deus não estava ausente naquele domingo. Ele estava sentado na cadeira vazia.</strong>"</p>
-            <div class="testimonial-author">
-              <div class="testimonial-avatar">R</div>
-              <div>
-                <strong>Renata Oliveira</strong>
-                <span>Botucatu, SP</span>
-              </div>
+            <div class="testimonial-img-wrapper">
+              <img src="depoimento 01.jpeg" alt="Comentário real da leitora Dra. Vivianne Benini no Instagram: 'Eu peguei a minha edição na sexta-feira e simplesmente não consigo parar de ler...'" class="testimonial-screenshot-img">
             </div>
-          </div>
-          <div class="testimonial">
-            <div class="testimonial-stars">★★★★★</div>
-            <p class="testimonial-text">"Li em duas noites. Na primeira, chorei. Na segunda, <strong>entendi que as minhas cicatrizes não eram punição — eram prova de que eu sobrevivi.</strong> Comprei mais 3 exemplares para presentear amigas que estão passando pelo mesmo."</p>
+            <p class="testimonial-text">"Eu peguei a minha edição na sexta-feira e simplesmente não consigo parar de ler. Estou quase finalizando. <strong>É uma leitura que prende você do começo ao fim. Parabéns Ingrid e Daiane, vocês são incríveis 😍</strong>"</p>
             <div class="testimonial-author">
-              <div class="testimonial-avatar">A</div>
+              <div class="testimonial-avatar" style="background: #fdf2f8; color: #db2777; border-color: #fbcfe8;">VB</div>
               <div>
-                <strong>Ana Beatriz Costa</strong>
-                <span>Curitiba, PR</span>
+                <strong>Dra. Vivianne Benini</strong>
+                <span>@draviviannebenini · Leitora da Edição Oficial</span>
               </div>
             </div>
           </div>
@@ -154,43 +149,43 @@
       <div class="container">
         <div class="text-center mb-lg">
           <span class="tag">Identificação</span>
-          <h2 class="section-title">Talvez este livro tenha chegado<br>até você no momento certo.</h2>
-          <p class="section-subtitle">Se alguma destas frases te fez parar de rolar a tela, esta obra foi escrita para você:</p>
+          <h2 class="section-title">Talvez em algum capítulo,<br>você encontre a sua própria história.</h2>
+          <p class="section-subtitle">Se alguma destas realidades ecoa no seu coração, esta obra foi escrita para você:</p>
         </div>
         <div class="cards-grid">
           <div class="card">
             <div class="card-num">01</div>
             <div>
-              <h3>Para você que chora em silêncio.</h3>
-              <p>Quando a dor é profunda demais para ser explicada aos outros e você só precisa de um solo firme para voltar a respirar.</p>
+              <h3>Para você que carrega marcas que gostaria de apagar.</h3>
+              <p>A fragilidade do vaso nunca limitou o poder do Oleiro. Ele não precisa de uma história perfeita — Ele precisa apenas que ela chegue às Suas mãos.</p>
             </div>
           </div>
           <div class="card">
             <div class="card-num">02</div>
             <div>
-              <h3>Para você que olha a cadeira vazia e não sabe o que fazer com a saudade.</h3>
-              <p>Há perdas que ninguém ensina a gente a suportar. Este livro senta ao seu lado nesse silêncio.</p>
+              <h3>Para você que carrega uma dor que quase ninguém vê.</h3>
+              <p>Há perdas e silêncios que ninguém nos ensina a suportar. Este testemunho senta ao seu lado e traz consolo real.</p>
             </div>
           </div>
           <div class="card">
             <div class="card-num">03</div>
             <div>
-              <h3>Para você que ainda fala com Deus, mas não sabe se Ele está ouvindo.</h3>
-              <p>A fé que sobrevive ao deserto é mais forte do que qualquer certeza confortável.</p>
+              <h3>Para você que ainda ora, mas busca respostas no silêncio.</h3>
+              <p>A fé que sobrevive ao deserto é mais forte do que qualquer certeza confortável. Deus continua trabalhando nos bastidores.</p>
             </div>
           </div>
           <div class="card">
             <div class="card-num">04</div>
             <div>
-              <h3>Para você que carrega perguntas que ninguém consegue responder.</h3>
-              <p>"Por quê?" nem sempre tem resposta. Mas existe paz mesmo quando não se compreende o todo.</p>
+              <h3>Para você que pensa: "Depois de tudo, o que ainda pode existir de bom em mim?"</h3>
+              <p>Este livro é um convite para descobrir que Deus pode transformar aquilo que quase destruiu você no lugar onde outras pessoas encontrarão esperança.</p>
             </div>
           </div>
           <div class="card card-wide">
             <div class="card-num">05</div>
             <div>
-              <h3>Para você que sente que está quebrado demais para ser usado por Deus.</h3>
-              <p>O Oleiro jamais abandona a obra das Suas mãos. Às vezes, é exatamente pela rachadura que Ele decide fazer a luz entrar.</p>
+              <h3>"Ainda existe esperança para aquilo que foi quebrado."</h3>
+              <p>Ainda existe propósito depois da dor. Ainda existem tesouros que Deus deseja revelar através da sua história. Entregue o barro ao Oleiro — você ainda não viu tudo o que Ele é capaz de fazer com ele.</p>
             </div>
           </div>
         </div>
@@ -201,7 +196,7 @@
     <section class="section" id="livro">
       <div class="container">
         <div class="text-center mb-lg">
-          <span class="tag">Exemplar Físico + Bônus Digital</span>
+          <span class="tag">Exemplar Físico</span>
           <h2 class="section-title">Um livro que você vai segurar com as duas mãos.</h2>
           <p class="section-subtitle">Edição impressa em papel de alta gramatura — feito para ser lido, relido e presenteado.</p>
         </div>
@@ -234,11 +229,6 @@
                 </div>
               </li>
             </ul>
-            <div class="bonus-box">
-              <div class="bonus-badge">🎁 BÔNUS INCLUSO</div>
-              <h4>Plano de Leitura de 7 Dias para Dias Difíceis</h4>
-              <p>Guia digital em PDF com reflexões diárias, versículos e orações práticas para os momentos em que a fé precisa ser escolhida. <strong>Acesso imediato após a compra</strong> — enquanto seu livro físico chega.</p>
-            </div>
           </div>
         </div>
         <!-- Gallery -->
@@ -265,7 +255,7 @@
               <span class="faq-icon">+</span>
             </summary>
             <div class="faq-answer">
-              <p>É um <strong>livro físico impresso</strong> em papel de alta gramatura, feito para você ter em mãos, sublinhar e guardar na sua estante. Além disso, você recebe como <strong>bônus gratuito</strong> o Plano de Leitura de 7 Dias em PDF com acesso digital imediato.</p>
+              <p>É um <strong>livro físico impresso</strong> em papel de alta gramatura com acabamento especial, feito para você ter em mãos, sublinhar, orar e guardar com carinho na sua estante.</p>
             </div>
           </details>
 
@@ -286,16 +276,6 @@
             </summary>
             <div class="faq-answer">
               <p>Oferecemos a opção de <strong>Registro Módico (exclusiva dos Correios para livros) por apenas R$ 12,90 para todo o Brasil</strong>, além de PAC e SEDEX para quem deseja prazos ainda mais rápidos. Você pode calcular o valor exato para o seu CEP na seção de compra.</p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary class="faq-question">
-              <span>Como recebo o bônus digital (Plano de Leitura 7 Dias)?</span>
-              <span class="faq-icon">+</span>
-            </summary>
-            <div class="faq-answer">
-              <p>Assim que o seu pedido for confirmado, você receberá automaticamente no seu e-mail e WhatsApp o link direto para download do PDF. Você já pode começar a ler no mesmo dia enquanto aguarda a entrega do livro físico.</p>
             </div>
           </details>
 
@@ -337,15 +317,15 @@
             <p class="offer-author">Por <strong>Ingrid Oliveira Pedroso</strong></p>
 
             <div class="price-box">
-              <div class="price-old">De R$ 89,90</div>
-              <div class="price-now"><span class="cur">R$</span><span class="val">59</span><span class="cents">,90</span></div>
+              <div class="price-old">De <span class="preco-original-dinamico">R$ 89,90</span></div>
+              <div class="price-now"><span class="cur">R$</span><span class="val preco-val-dinamico">59</span><span class="cents preco-cents-dinamico">,90</span></div>
               <div class="price-installments">ou até 12x no cartão · PIX à vista</div>
             </div>
 
             <ul class="perks">
               <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Livro físico — papel de alta gramatura</li>
-              <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Bônus: Plano de Leitura 7 Dias (PDF)</li>
-              <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Embalagem protetora reforçada</li>
+              <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <strong>Envio rápido: postagem em até 48 horas úteis</strong></li>
+              <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Embalagem protetora especial</li>
               <li><svg width="18" height="18" fill="none" stroke="#92400e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Envio rastreado via Correios</li>
             </ul>
 
@@ -388,47 +368,513 @@
         <a href="#autora">A Autora</a>
         <a href="#faq">Dúvidas</a>
         <a href="#oferta">Comprar</a>
+
       </div>
     </div>
   </footer>
 
-  <!-- CHECKOUT MODAL -->
+  <!-- CHECKOUT MODAL MULTI-ETAPAS -->
   <div class="modal-backdrop" id="checkoutModal" onclick="closeCheckout(event)">
-    <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal modal-large" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeCheckout()">✕</button>
-      <span class="tag">Finalizar Pedido</span>
-      <h3 class="modal-title">Tesouros em Vaso de Barro</h3>
-      <p class="modal-sub">Exemplar Físico + Bônus Digital — Ingrid Oliveira Pedroso</p>
-      <div class="modal-summary">
-        <img src="LIVRO - INGRID PEDROSO.png" alt="Capa">
-        <div>
-          <strong>1x Livro + Plano de Leitura 7 Dias (PDF)</strong>
-          <span class="modal-stock">Em estoque · Envio nacional</span>
-          <span class="modal-price">R$ 59,90</span>
+
+      <!-- PROGRESS TRACKER -->
+      <div class="checkout-stepper">
+        <div class="step-item active" id="stepIndicator1">
+          <span class="step-num">1</span>
+          <span class="step-label">Dados & Envio</span>
+        </div>
+        <div class="step-line" id="stepLine1"></div>
+        <div class="step-item" id="stepIndicator2">
+          <span class="step-num">2</span>
+          <span class="step-label">Verificação</span>
+        </div>
+        <div class="step-line" id="stepLine2"></div>
+        <div class="step-item" id="stepIndicator3">
+          <span class="step-num">3</span>
+          <span class="step-label">Pagamento</span>
         </div>
       </div>
-      <form id="checkoutForm" class="modal-form" onsubmit="submitCheckout(event)">
-        <div class="field"><label>Nome Completo</label><input type="text" placeholder="Maria da Silva" required></div>
-        <div class="field-row">
-          <div class="field"><label>E-mail</label><input type="email" placeholder="email@exemplo.com" required></div>
-          <div class="field"><label>WhatsApp</label><input type="tel" placeholder="(11) 99999-9999" required></div>
+
+      <!-- AVISO DE POSTAGEM ELEGANTE -->
+      <div class="shipping-dispatch-notice">
+        <div class="dispatch-badge-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
         </div>
-        <div class="field-row">
-          <div class="field"><label>CEP</label><input type="text" placeholder="00000-000" required></div>
-          <div class="field"><label>Pagamento</label><select><option>PIX (instantâneo)</option><option>Cartão até 12x</option><option>Boleto</option></select></div>
+        <div class="dispatch-text-content">
+          <span class="dispatch-headline">📦 Envio Rápido & Seguro pelos Correios</span>
+          <span class="dispatch-subtext">Postagem garantida em até 48h úteis com código de rastreamento direto no seu WhatsApp.</span>
         </div>
-        <button type="submit" class="btn-primary btn-full">CONFIRMAR PEDIDO · R$ 59,90 →</button>
-        <p class="modal-secure">🔒 Dados protegidos com criptografia SSL 256-bit</p>
-      </form>
+      </div>
+
+      <!-- RESUMO PREMIUM DO PEDIDO -->
+      <div class="modal-summary premium-summary-card">
+        <div class="summary-product-row">
+          <div class="summary-cover-box">
+            <img src="LIVRO - INGRID PEDROSO.png" alt="Capa Livro Tesouros em Vaso de Barro" class="summary-book-cover">
+            <div class="summary-cover-spine"></div>
+          </div>
+          <div class="summary-info-col">
+            <div class="summary-badge-group">
+              <span class="summary-edition-badge">LIVRO FÍSICO</span>
+              <span class="summary-signature-badge">✍️ Autografado com Carinho</span>
+            </div>
+            <h4 class="summary-book-title">Tesouros em Vaso de Barro</h4>
+            <span class="summary-book-author">por Ingrid Oliveira Pedroso</span>
+            <div class="summary-stock-pill">
+              <span class="stock-dot"></span>
+              <span>Exemplar reservado · Pronta entrega</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-ledger-divider"></div>
+
+        <div class="summary-ledger-row">
+          <div class="ledger-details">
+            <div class="ledger-item">
+              <span class="ledger-label">Item (<span id="summaryBookQty">1x</span> exemplar):</span>
+              <span class="ledger-value">R$ <span id="summaryBookPrice">59,90</span></span>
+            </div>
+            <div class="ledger-item">
+              <span class="ledger-label">Frete Correios (<span id="summaryFreteNameDisplay">Módico</span>):</span>
+              <span class="ledger-value">R$ <span id="summaryFretePrice">12,90</span></span>
+            </div>
+            <div class="ledger-item" id="summaryDiscountRow" style="display: none; color: #16a34a;">
+              <span class="ledger-label" style="color: #15803d;">Desconto Cupom (<span id="summaryCouponCodeDisplay">CUPOM</span>):</span>
+              <span class="ledger-value" style="color: #16a34a;">- R$ <span id="summaryDiscountPrice">0,00</span></span>
+            </div>
+          </div>
+
+          <div class="ledger-total-box">
+            <span class="ledger-total-label">TOTAL DO PEDIDO</span>
+            <div class="ledger-total-value">
+              <span class="currency">R$</span>
+              <strong id="summaryTotalPrice">72,80</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ETAPA 1: DADOS PESSOAIS & ENDEREÇO ═══ -->
+      <div class="checkout-step-pane active" id="stepPane1">
+        <form id="checkoutStep1Form" onsubmit="goToStep2(event)">
+          <div class="form-section-title">👤 Seus Dados de Contato</div>
+          <div class="field">
+            <label for="clientName">Nome Completo *</label>
+            <input type="text" id="clientName" placeholder="Ex: Maria Aparecida da Silva" required>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="clientEmail">E-mail *</label>
+              <input type="email" id="clientEmail" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="field">
+              <label for="clientPhone">WhatsApp com DDD *</label>
+              <input type="tel" id="clientPhone" placeholder="(11) 99999-9999" maxlength="15" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="clientQty">Quantidade de Exemplares</label>
+              <select id="clientQty" onchange="updateCheckoutCalculations()">
+                <option value="1">1 exemplar — R$ 59,90</option>
+                <option value="2">2 exemplares — R$ 119,80 (Presenteie alguém)</option>
+                <option value="3">3 exemplares — R$ 179,70</option>
+                <option value="5">5 exemplares — R$ 299,50</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- OPÇÃO DE PRESENTEAR ALGUÉM -->
+          <div class="gift-section-box" id="giftSectionBox">
+            <label class="gift-toggle-label">
+              <input type="checkbox" id="checkIsGift" onchange="toggleGiftSection(this.checked)">
+              <div class="gift-toggle-text">
+                <strong>🎁 Deseja presentear alguém com este livro?</strong>
+                <span>Você pode incluir uma dedicatória impressa especial na embalagem e/ou enviar direto para o endereço de quem vai receber.</span>
+              </div>
+            </label>
+
+            <div id="giftFieldsContainer" class="gift-fields-container" style="display: none;">
+              <div class="gift-banner-tip">
+                💌 <em>A autora imprimirá um cartão delicado com a sua mensagem especial para acompanhar o livro físico na embalagem!</em>
+              </div>
+
+              <div class="field">
+                <label for="giftRecipientName">Nome de quem vai receber o presente (Destinatário) *</label>
+                <input type="text" id="giftRecipientName" placeholder="Ex: Maria Clara, Pastora Débora, Minha Mãe...">
+              </div>
+
+              <div class="field">
+                <label for="giftMessage">Mensagem de Dedicatória (Opcional - impressa no cartão do presente)</label>
+                <textarea id="giftMessage" rows="3" maxlength="350" placeholder="Escreva uma palavra de bênção, carinho ou agradecimento que tocará o coração da pessoa..." style="width:100%; border:1px solid var(--border); border-radius:8px; padding:.65rem; font-family:inherit; font-size:.85rem; resize:vertical;"></textarea>
+                <span class="field-help" style="display:block; text-align:right; font-size:.72rem; color:var(--text-3);"><span id="giftMsgCharCount">0</span>/350 caracteres</span>
+              </div>
+
+              <div class="gift-address-toggle-row">
+                <label class="gift-subtoggle-label">
+                  <input type="checkbox" id="checkGiftDiffAddress" onchange="toggleGiftAddressFields(this.checked)">
+                  <span>📦 <strong>Enviar diretamente para o endereço do presenteado</strong> (Opcional)</span>
+                </label>
+              </div>
+
+              <div id="giftAddressFields" class="gift-subaddress-box" style="display: none;">
+                <p class="gift-subaddress-desc">Informe o endereço do presenteado para os Correios entregarem direto na casa dele(a):</p>
+                
+                <div class="field-row">
+                  <div class="field" style="flex: 1.2;">
+                    <label for="giftCep">CEP do Destinatário *</label>
+                    <div class="input-with-action">
+                      <input type="text" id="giftCep" placeholder="00000-000" maxlength="9">
+                      <button type="button" class="btn-input-action" onclick="handleGiftCepSearch()">Buscar CEP</button>
+                    </div>
+                    <span class="field-help" id="giftCepStatus">Digite o CEP para preencher o endereço</span>
+                  </div>
+                  <div class="field" style="flex: 0.8;">
+                    <label for="giftUf">Estado (UF) *</label>
+                    <input type="text" id="giftUf" placeholder="SP" maxlength="2" style="text-transform: uppercase;">
+                  </div>
+                </div>
+
+                <div class="field-row">
+                  <div class="field" style="flex: 2;">
+                    <label for="giftLogradouro">Rua / Avenida *</label>
+                    <input type="text" id="giftLogradouro" placeholder="Ex: Rua das Palmeiras">
+                  </div>
+                  <div class="field" style="flex: 1;">
+                    <label for="giftNumero">Número *</label>
+                    <input type="text" id="giftNumero" placeholder="123">
+                  </div>
+                </div>
+
+                <div class="field-row">
+                  <div class="field">
+                    <label for="giftComplemento">Complemento</label>
+                    <input type="text" id="giftComplemento" placeholder="Apto, Bloco, etc.">
+                  </div>
+                  <div class="field">
+                    <label for="giftBairro">Bairro *</label>
+                    <input type="text" id="giftBairro" placeholder="Bairro">
+                  </div>
+                  <div class="field">
+                    <label for="giftCidade">Cidade *</label>
+                    <input type="text" id="giftCidade" placeholder="Cidade">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section-title" style="margin-top: 1.25rem;">📦 Endereço de Entrega Principal</div>
+          
+          <div class="field-row">
+            <div class="field" style="flex: 1.2;">
+              <label for="clientCep">CEP *</label>
+              <div class="input-with-action">
+                <input type="text" id="clientCep" placeholder="00000-000" maxlength="9" required>
+                <button type="button" class="btn-input-action" id="btnBuscarCep" onclick="handleCheckoutCepSearch()">Buscar CEP</button>
+              </div>
+              <span class="field-help" id="cepStatus">Digite o CEP para preencher o endereço automaticamente.</span>
+            </div>
+            <div class="field" style="flex: 0.8;">
+              <label for="clientUf">Estado (UF) *</label>
+              <input type="text" id="clientUf" placeholder="SP" maxlength="2" required style="text-transform: uppercase;">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="flex: 2;">
+              <label for="clientLogradouro">Rua / Avenida *</label>
+              <input type="text" id="clientLogradouro" placeholder="Ex: Rua das Flores" required>
+            </div>
+            <div class="field" style="flex: 1;">
+              <label for="clientNumero">Número *</label>
+              <input type="text" id="clientNumero" placeholder="123" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="clientComplemento">Complemento (opcional)</label>
+              <input type="text" id="clientComplemento" placeholder="Apto 42, Bloco B, Casa 2">
+            </div>
+            <div class="field">
+              <label for="clientBairro">Bairro *</label>
+              <input type="text" id="clientBairro" placeholder="Centro" required>
+            </div>
+            <div class="field">
+              <label for="clientCidade">Cidade *</label>
+              <input type="text" id="clientCidade" placeholder="Sua cidade" required>
+            </div>
+          </div>
+
+          <!-- SELEÇÃO DO TIPO DE FRETE -->
+          <div class="frete-selection-box">
+            <label class="frete-selection-title">Opção de Envio pelos Correios:</label>
+            <div class="frete-options-list" id="checkoutFreteOptions">
+              <label class="frete-radio-card">
+                <input type="radio" name="shippingOption" value="modico" data-name="Registro Módico (Livros)" data-price="12.90" checked onchange="updateCheckoutCalculations()">
+                <div class="frete-card-info">
+                  <strong>📚 Registro Módico (Livros)</strong>
+                  <span>Entrega em 5 a 9 dias úteis · Envio rastreado</span>
+                </div>
+                <div class="frete-card-price" id="freteModicoPrice">R$ 12,90</div>
+              </label>
+              <label class="frete-radio-card">
+                <input type="radio" name="shippingOption" value="pac" data-name="PAC" data-price="21.90" onchange="updateCheckoutCalculations()">
+                <div class="frete-card-info">
+                  <strong>📦 PAC Correios</strong>
+                  <span>Entrega em 4 a 7 dias úteis · Envio rastreado</span>
+                </div>
+                <div class="frete-card-price" id="fretePacPrice">R$ 21,90</div>
+              </label>
+              <label class="frete-radio-card">
+                <input type="radio" name="shippingOption" value="sedex" data-name="SEDEX" data-price="34.90" onchange="updateCheckoutCalculations()">
+                <div class="frete-card-info">
+                  <strong>⚡ SEDEX Expresso</strong>
+                  <span>Entrega rápida em 1 a 3 dias úteis</span>
+                </div>
+                <div class="frete-card-price" id="freteSedexPrice">R$ 34,90</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- CAMPO DE CUPOM DE DESCONTO -->
+          <div class="coupon-section-box">
+            <label for="checkoutCouponInput" class="coupon-title">🎟️ Possui Cupom de Desconto?</label>
+            <div class="coupon-input-wrap">
+              <input type="text" id="checkoutCouponInput" placeholder="Digite o código (ex: PROMO10)" style="text-transform: uppercase;">
+              <button type="button" class="btn-coupon-apply" id="btnApplyCoupon" onclick="aplicarCupomCheckout()">
+                Aplicar
+              </button>
+            </div>
+            <div id="couponFeedback" class="coupon-feedback" style="display: none;"></div>
+            <small style="display: block; color: var(--text-muted); font-size: .73rem; margin-top: .35rem;">
+              * Cupons de frete grátis são aplicáveis nas modalidades Registro Módico e PAC (não incluem SEDEX).
+            </small>
+          </div>
+
+          <button type="submit" class="btn-primary btn-full mt-md">
+            REVISAR MEUS DADOS DE ENVIO →
+          </button>
+        </form>
+      </div>
+
+      <!-- ═══ ETAPA 2: VERIFICAÇÃO OBRIGATÓRIA ANTES DO PAGAMENTO ═══ -->
+      <div class="checkout-step-pane" id="stepPane2">
+        <div class="review-warning-card">
+          <div class="warning-icon">📍</div>
+          <div>
+            <strong>Por favor, confira os dados de entrega com atenção!</strong>
+            <p>O livro é um produto físico que será postado nos Correios. Certifique-se de que o nome, número da residência e CEP estão 100% corretos para evitar devoluções.</p>
+          </div>
+        </div>
+
+        <div class="review-details-card">
+          <div class="review-block">
+            <span class="review-label">Destinatário</span>
+            <div class="review-value" id="reviewName">-</div>
+          </div>
+
+          <div class="review-grid-2">
+            <div class="review-block">
+              <span class="review-label">WhatsApp</span>
+              <div class="review-value" id="reviewPhone">-</div>
+            </div>
+            <div class="review-block">
+              <span class="review-label">E-mail</span>
+              <div class="review-value" id="reviewEmail">-</div>
+            </div>
+          </div>
+
+          <div class="review-block highlight-address">
+            <span class="review-label">Endereço de Entrega Completo</span>
+            <div class="review-value" id="reviewAddress">-</div>
+            <div class="review-subvalue" id="reviewAddressCityCep">-</div>
+          </div>
+
+          <div class="review-grid-2">
+            <div class="review-block">
+              <span class="review-label">Frete Escolhido</span>
+              <div class="review-value" id="reviewFrete">-</div>
+            </div>
+            <div class="review-block">
+              <span class="review-label">Quantidade</span>
+              <div class="review-value" id="reviewQty">1 exemplar</div>
+            </div>
+          </div>
+
+          <div class="review-block" id="reviewCouponBlock" style="display: none; background: #f0fdf4; border: 1px dashed #22c55e; border-radius: 8px; padding: .65rem .85rem; margin-top: .4rem;">
+            <span class="review-label" style="color: #166534;">Cupom Aplicado</span>
+            <div class="review-value" id="reviewCouponText" style="color: #15803d; font-size: .88rem;">-</div>
+          </div>
+
+          <!-- BLOCO DE PRESENTE NA REVISÃO -->
+          <div class="review-block" id="reviewGiftBlock" style="display: none; background: #fffdf7; border: 1px solid #fde68a; border-radius: 8px; padding: .75rem .95rem; margin-top: .5rem;">
+            <div style="display: flex; align-items: center; gap: .4rem; color: #b45309; font-weight: 700; font-size: .85rem; margin-bottom: .35rem;">
+              <span>🎁 Pedido Marcado como Presente</span>
+            </div>
+            <div style="font-size: .82rem; color: #78350f; margin-bottom: .25rem;">
+              <strong>Destinatário do Presente:</strong> <span id="reviewGiftRecipient">-</span>
+            </div>
+            <div id="reviewGiftMsgRow" style="font-size: .82rem; color: #78350f; margin-bottom: .35rem; font-style: italic; background: #fff; padding: .4rem .6rem; border-radius: 6px; border: 1px dashed #fcd34d;">
+              <strong>Dedicatória no Cartão:</strong> "<span id="reviewGiftMsg">-</span>"
+            </div>
+            <div id="reviewGiftAddressRow" style="font-size: .8rem; color: #92400e; display: none;">
+              <strong>📦 Enviar para o endereço do presenteado:</strong> <span id="reviewGiftAddress">-</span>
+            </div>
+          </div>
+
+          <div class="review-total-row">
+            <span>Valor Total da Compra:</span>
+            <strong id="reviewTotal">R$ 72,80</strong>
+          </div>
+        </div>
+
+        <div class="step-actions-row">
+          <button type="button" class="btn-ghost" onclick="goToStep1()">
+            ← Alterar Algum Dado
+          </button>
+          <button type="button" class="btn-primary" id="btnConfirmAndPay" onclick="confirmAndGoToPayment()">
+            ✅ Tudo Correto, Ir para Pagamento →
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ ETAPA 3: PAGAMENTO MERCADO PAGO ═══ -->
+      <div class="checkout-step-pane" id="stepPane3">
+        <div class="payment-order-tag-premium">
+          <div class="order-id-group">
+            <span class="order-tag-icon">🏷️</span>
+            <div>
+              <span class="order-tag-label">Identificador do Pedido</span>
+              <strong class="order-tag-num" id="orderNumberDisplay">#TB-1001</strong>
+            </div>
+          </div>
+          <div class="order-total-preview-group">
+            <span class="order-preview-label">Total a confirmar:</span>
+            <strong class="order-preview-price" id="paymentTotalDisplay">R$ 72,80</strong>
+          </div>
+        </div>
+
+        <!-- ABAS DE PAGAMENTO -->
+        <div class="payment-tabs">
+          <button type="button" class="payment-tab active" id="tabPix" onclick="switchPaymentMethod('pix')">
+            <span class="tab-badge">Aprovação Imediata</span>
+            <span class="tab-title">⚡ Pagar com PIX</span>
+          </button>
+          <button type="button" class="payment-tab" id="tabCartao" onclick="switchPaymentMethod('cartao')">
+            <span class="tab-badge">Em até 12x</span>
+            <span class="tab-title">💳 Cartão de Crédito</span>
+          </button>
+        </div>
+
+        <!-- CONTEÚDO PIX -->
+        <div class="payment-content active" id="paymentContentPix">
+          <!-- ESTADO 1: ANTES DE GERAR O QR CODE -->
+          <div class="pix-initial-box" id="pixInitialBox">
+            <div style="font-size: 2rem; margin-bottom: .25rem;">⚡</div>
+            <h4>Pagamento Instantâneo via PIX</h4>
+            <p>Clique no botão abaixo para gerar a chave e o QR Code oficial do seu pedido no valor de <strong id="pixInitialTotal">R$ 72,80</strong>.</p>
+            <button type="button" class="btn-primary btn-full" id="btnGerarPix" onclick="solicitarGeracaoPix()">
+              ⚡ Gerar QR Code PIX →
+            </button>
+          </div>
+
+          <!-- ESTADO 2: CARREGANDO / GERADO -->
+          <div id="pixGeneratedArea" style="display: none;">
+            <!-- LOADING -->
+            <div id="pixLoadingBox" class="pix-loading-box" style="display: none;">
+              <div class="pix-spinner"></div>
+              <p>Gerando QR Code PIX no Mercado Pago...</p>
+            </div>
+
+            <!-- PRONTO -->
+            <div id="pixReadyBox" style="display: none;">
+              <div class="pix-instructions">
+                <p>1. Abra o aplicativo do seu banco</p>
+                <p>2. Escolha pagar com <strong>PIX Copia e Cola</strong> ou escaneie o QR Code</p>
+                <p>3. Confirme o pagamento de <strong id="pixTotalDisplay">R$ 72,80</strong></p>
+              </div>
+
+              <div class="pix-qr-area">
+                <img id="pixQrImage" src="" alt="QR Code PIX" class="pix-qr-img">
+                <div class="pix-code-container">
+                  <label>Código PIX Copia e Cola:</label>
+                  <div class="pix-input-group">
+                    <input type="text" id="pixCopyInput" readonly value="" placeholder="Código Copia e Cola...">
+                    <button type="button" class="btn-copy" id="btnCopyPix" onclick="copyPixCode()">
+                      Copiar Código
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pix-confirm-box">
+                <p class="pix-timer" id="pixTimerText">⏱️ Aguardando confirmação do pagamento pelo banco...</p>
+                <button type="button" class="btn-primary btn-full" id="btnCheckPix" onclick="verificarStatusPixCliente()">
+                  🔄 Já Fiz o Pagamento pelo Meu Banco
+                </button>
+                <div id="pixStatusFeedback" style="display: none;" class="pix-pending-notice"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTEÚDO CARTÃO (MERCADO PAGO CARD BRICK) -->
+        <div class="payment-content" id="paymentContentCartao">
+          <div id="cardBrickLoading" class="pix-loading-box" style="display: none;">
+            <div class="pix-spinner"></div>
+            <p>Carregando ambiente seguro de cartão...</p>
+          </div>
+
+          <div id="cardPaymentBrick_container"></div>
+
+          <div id="cardPaymentFeedback" style="display: none; margin-top: 1rem;"></div>
+
+          <p class="modal-secure" style="margin-top: 1.25rem;">🔒 Processamento oficial, seguro e criptografado direto no Mercado Pago</p>
+        </div>
+
+        <div class="payment-back-row">
+          <button type="button" class="btn-ghost" onclick="goToStep2()">← Voltar e Revisar Endereço</button>
+        </div>
+      </div>
+
+      <!-- ═══ SUCESSO / CONFIRMAÇÃO FINAL ═══ -->
       <div class="modal-success" id="modalSuccess">
         <div class="success-check">✓</div>
-        <h3>Pedido Gerado com Sucesso!</h3>
-        <p>Você receberá a confirmação e o link do bônus digital no seu e-mail. O rastreio será enviado por WhatsApp assim que o livro for despachado.</p>
-        <button class="btn-primary" onclick="closeCheckout()">Fechar</button>
+        <h3>Pedido Registrado com Sucesso!</h3>
+        <p class="success-subtitle">Obrigado por adquirir o livro <strong>"Tesouros em Vaso de Barro"</strong>!</p>
+        
+        <div class="success-box">
+          <p>Número do Pedido: <strong id="successOrderNum">#TB-1001</strong></p>
+          <p>Destinatário: <strong id="successClientName">-</strong></p>
+          <p>Endereço: <span id="successAddress">-</span></p>
+          <p class="success-shipping-info">📦 Seu exemplar está sendo separado com carinho em Botucatu/SP e o código de rastreio dos Correios será enviado para o seu WhatsApp e E-mail.</p>
+        </div>
+
+        <div class="success-actions">
+          <a href="rastreio.html" id="successTrackingLink" class="btn-primary btn-full">
+            📦 Acompanhar Envio do Pedido em Tempo Real →
+          </a>
+          <a href="#" id="successWhatsappBtn" target="_blank" class="btn-whatsapp">
+            Falar no WhatsApp da Equipe
+          </a>
+          <button class="btn-ghost" onclick="closeCheckout()">Fechar Janela</button>
+        </div>
       </div>
+
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

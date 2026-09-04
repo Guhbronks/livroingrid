@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acompanhar Pedido — Tesouros em Vaso de Barro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos específicos da página de rastreio */
+    .tracking-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+    .tracking-main {
+      flex: 1;
+      max-width: 760px;
+      margin: 2rem auto;
+      padding: 0 1.25rem;
+      width: 100%;
+    }
+    .tracking-search-card {
+      background: var(--white);
+      border: 1px solid var(--border-warm);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .tracking-search-card h1 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: .5rem;
+    }
+    .tracking-search-card p {
+      font-size: .9rem;
+      color: var(--text-2);
+      margin-bottom: 1.5rem;
+    }
+    .tracking-input-row {
+      display: flex;
+      gap: .5rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .tracking-input-row input {
+      flex: 1;
+      padding: .85rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: .92rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .2s;
+    }
+    .tracking-input-row input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: #fff;
+    }
+    .tracking-input-row button {
+      padding: .85rem 1.35rem;
+      background: var(--gold);
+      color: #fff;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: .92rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+    .tracking-input-row button:hover {
+      background: var(--gold-light);
+    }
+
+    .tracking-dispatch-guarantee {
+      margin-top: 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #15803d;
+      padding: .4rem .85rem;
+      border-radius: 99px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    /* RESULTADO DO RASTREAMENTO */
+    .tracking-result-box {
+      display: none;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      animation: fadeIn .3s ease;
+    }
+    .tracking-result-box.show {
+      display: block;
+    }
+
+    .order-status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .order-status-header h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .order-status-header .order-date-text {
+      font-size: .8rem;
+      color: var(--text-3);
+    }
+
+    /* TIMELINE HORIZONTAL / VERTICAL */
+    .timeline {
+      position: relative;
+      margin-bottom: 2rem;
+      padding-left: 1.75rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-step {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .timeline-step:last-child {
+      margin-bottom: 0;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -1.75rem;
+      top: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1.5px var(--border);
+      transition: all .2s;
+    }
+    .timeline-step.completed .timeline-dot {
+      background: #16a34a;
+      box-shadow: 0 0 0 1.5px #16a34a;
+    }
+    .timeline-step.current .timeline-dot {
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(146,64,14,0.25);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .timeline-content strong {
+      display: block;
+      font-size: .95rem;
+      color: var(--text);
+    }
+    .timeline-content p {
+      font-size: .82rem;
+      color: var(--text-2);
+      margin-top: .15rem;
+    }
+    .timeline-content .step-time {
+      font-size: .72rem;
+      color: var(--text-3);
+    }
+
+    /* CÓDIGO DE RASTREIO DESTACADO */
+    .tracking-code-banner {
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+      text-align: center;
+    }
+    .tracking-code-title {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0369a1;
+      letter-spacing: .5px;
+      margin-bottom: .35rem;
+    }
+    .tracking-code-val {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #0284c7;
+      letter-spacing: 2px;
+      font-family: monospace;
+      margin-bottom: .6rem;
+    }
+    .btn-track-correios {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: #0284c7;
+      color: #fff;
+      padding: .6rem 1.2rem;
+      border-radius: 99px;
+      font-size: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-track-correios:hover {
+      background: #0369a1;
+      color: #fff;
+    }
+
+    /* DETALHES DE ENTREGA */
+    .delivery-details-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .delivery-details-card h3 {
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .75rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .delivery-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .85rem;
+      font-size: .82rem;
+    }
+    .delivery-info-grid span {
+      display: block;
+      color: var(--text-3);
+      font-size: .72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .delivery-info-grid strong {
+      font-size: .88rem;
+      color: var(--text);
+    }
+
+    .tracking-support-box {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .tracking-support-box p {
+      font-size: .85rem;
+      color: var(--text-2);
+      margin-bottom: .75rem;
+    }
+
+    @media (max-width: 640px) {
+      .tracking-input-row {
+        flex-direction: column;
+      }
+      .tracking-input-row button {
+        width: 100%;
+      }
+      .delivery-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .order-status-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .tracking-search-card h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tracking-page-wrapper">
+    
+    <!-- HEADER -->
+    <header class="nav" style="position: static; background: #fff;">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo">Tesouros em Vaso de Barro</a>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <a href="index.html" class="btn-ghost" style="padding: .5rem .9rem; font-size: .82rem;">← Voltar à Loja</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="tracking-main">
+      
+      <!-- CARD DE BUSCA -->
+      <section class="tracking-search-card">
+        <span class="tag">Rastreamento de Envio</span>
+        <h1>Acompanhe a Entrega do seu Livro</h1>
+        <p>Informe o seu <strong>E-mail</strong> ou <strong>WhatsApp</strong> para visualizar em tempo real a preparação e o rastreio dos Correios.</p>
+
+        <form id="trackingSearchForm" onsubmit="buscarPedidoCliente(event)">
+          <div class="tracking-input-row">
+            <input type="text" id="trackingInput" placeholder="Digite seu E-mail ou WhatsApp..." required autofocus>
+            <button type="submit" id="btnBuscarPedido">Consultar Pedido</button>
+          </div>
+        </form>
+
+        <div class="tracking-dispatch-guarantee">
+          <span>⚡ Postagem garantida nos Correios em até 48 horas úteis após a confirmação do pagamento!</span>
+        </div>
+      </section>
+
+      <!-- ÁREA DE FEEDBACK / ERRO -->
+      <div id="trackingFeedback" style="display: none; text-align: center; padding: 1rem; color: #b45309; font-weight: 600; font-size: .9rem;"></div>
+
+      <!-- RESULTADO DO RASTREAMENTO -->
+      <section class="tracking-result-box" id="trackingResultBox">
+        
+        <div class="order-status-header">
+          <div>
+            <h2 id="orderTitleDisplay">Pedido #TB-1001</h2>
+            <span class="order-date-text" id="orderDateDisplay">Realizado em 03/09/2026</span>
+          </div>
+          <div id="paymentBadgeContainer">
+            <span class="badge badge-pago">✓ Pagamento Aprovado</span>
+          </div>
+        </div>
+
+        <!-- TIMELINE DE STATUS -->
+        <div class="timeline" id="trackingTimeline">
+          <!-- Gerado dinamicamente pelo JavaScript -->
+        </div>
+
+        <!-- BANNER DE CÓDIGO DE RASTREIO (SE ENVIADO) -->
+        <div class="tracking-code-banner" id="trackingCodeBanner" style="display: none;">
+          <div class="tracking-code-title">Código de Rastreamento dos Correios</div>
+          <div class="tracking-code-val" id="trackingCodeDisplay">QB123456789BR</div>
+          <a href="#" id="correiosTrackBtn" target="_blank" class="btn-track-correios">
+            📦 Rastrear no Site dos Correios →
+          </a>
+        </div>
+
+        <!-- DETALHES DO ENDEREÇO E ENVIO -->
+        <div class="delivery-details-card">
+          <h3>📦 Detalhes do Envio</h3>
+          <div class="delivery-info-grid">
+            <div>
+              <span>Destinatário</span>
+              <strong id="destinatarioDisplay">-</strong>
+            </div>
+            <div>
+              <span>Telefone de Contato</span>
+              <strong id="telefoneDisplay">-</strong>
+            </div>
+            <div style="grid-column: span 2;">
+              <span>Endereço de Entrega</span>
+              <strong id="enderecoDisplay">-</strong>
+            </div>
+            <div>
+              <span>Modalidade de Frete</span>
+              <strong id="freteDisplay">Registro Módico (Livros)</strong>
+            </div>
+            <div>
+              <span>Quantidade</span>
+              <strong id="quantidadeDisplay">1 exemplar físico</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUPORTE -->
+        <div class="tracking-support-box">
+          <p>Tem alguma dúvida sobre a entrega do seu exemplar?</p>
+          <a href="#" id="whatsappSupportBtn" target="_blank" class="btn-whatsapp">
+            Falar com Suporte no WhatsApp
+          </a>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer" style="margin-top: auto;">
+      <div class="container footer-inner">
+        <div>
+          <strong class="footer-brand">Tesouros em Vaso de Barro</strong>
+          <p class="footer-copy">Ingrid Oliveira Pedroso · © 2026</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">Início</a>
+          <a href="index.html#oferta">Comprar Livro</a>
+
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script type="module" src="rastreio.js"></script>
+</body>
+</html>
