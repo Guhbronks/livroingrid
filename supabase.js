@@ -439,4 +439,33 @@ export async function consultarStatusPedido(orderId, orderNumber, telefone, emai
   }
 }
 
+/**
+ * Atualiza uma configuração no banco (Apenas Admin)
+ * @param {string} chave 
+ * @param {string} valor 
+ */
+export async function atualizarConfiguracao(chave, valor) {
+  try {
+    const { data, error } = await supabase
+      .from('configuracoes')
+      .upsert({
+        chave,
+        valor: String(valor),
+        updated_at: new Date().toISOString()
+      })
+      .select();
+
+    if (error) {
+      console.error(`Erro ao atualizar configuração ${chave}:`, error);
+      return { data: null, error };
+    }
+
+    return { data: data?.[0], error: null };
+  } catch (err) {
+    console.error('Exceção ao atualizar configuração:', err);
+    return { data: null, error: err };
+  }
+}
+
+
 
