@@ -511,12 +511,12 @@ async function carregarPrecosDinamicos() {
       const precoFmt = `R$ ${config.preco_livro.toFixed(2).replace('.', ',')}`;
       const precoOriginalFmt = `R$ ${config.preco_original.toFixed(2).replace('.', ',')}`;
 
-      document.querySelectorAll('.preco-livro-dinamico').forEach(el => el.innerText = precoFmt);
-      document.querySelectorAll('.preco-original-dinamico').forEach(el => el.innerText = precoOriginalFmt);
+      document.querySelectorAll('.preco-livro-dinamico').forEach(el => { el.innerText = precoFmt; el.classList.add('preco-carregado'); });
+      document.querySelectorAll('.preco-original-dinamico').forEach(el => { el.innerText = precoOriginalFmt; el.classList.add('preco-carregado'); });
 
       const [inteiro, centavos] = config.preco_livro.toFixed(2).split('.');
-      document.querySelectorAll('.preco-val-dinamico').forEach(el => el.innerText = inteiro);
-      document.querySelectorAll('.preco-cents-dinamico').forEach(el => el.innerText = `,${centavos}`);
+      document.querySelectorAll('.preco-val-dinamico').forEach(el => { el.innerText = inteiro; el.classList.add('preco-carregado'); });
+      document.querySelectorAll('.preco-cents-dinamico').forEach(el => { el.innerText = `,${centavos}`; el.classList.add('preco-carregado'); });
 
       // Atualiza estado e badges dinâmicos de Estoque
       if (config.estoque_livros !== undefined) {

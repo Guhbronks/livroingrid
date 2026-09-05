@@ -3,6 +3,20 @@
    Paleta Terrosa 60/30/10: Barro + Branco + Ouro Envelhecido
    ═══════════════════════════════════════════════════════════════ */
 
+/* Preços dinâmicos: ocultos até o JS carregar o valor do Supabase */
+.preco-livro-dinamico,
+.preco-val-dinamico,
+.preco-cents-dinamico,
+.preco-original-dinamico {
+  visibility: hidden;
+}
+.preco-livro-dinamico.preco-carregado,
+.preco-val-dinamico.preco-carregado,
+.preco-cents-dinamico.preco-carregado,
+.preco-original-dinamico.preco-carregado {
+  visibility: visible;
+}
+
 :root {
   /* 30% — Leitura */
   --white: #ffffff;
@@ -1983,3 +1997,70 @@ strong { color: var(--text); font-weight: 700; }
   }
 }
 
+/* ═══════════════════════════════════════
+   BOTÃO FLUTUANTE WHATSAPP
+   ═══════════════════════════════════════ */
+.wa-float-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  filter: drop-shadow(0 4px 16px rgba(37, 211, 102, 0.45));
+  transition: transform .25s ease, filter .25s ease;
+}
+
+.wa-float-btn:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 6px 24px rgba(37, 211, 102, 0.65));
+}
+
+.wa-float-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: wa-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes wa-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+.wa-float-tooltip {
+  background: #1a1612;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+}
+
+.wa-float-btn:hover .wa-float-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 640px) {
+  .wa-float-btn {
+    bottom: 20px;
+    right: 18px;
+  }
+  .wa-float-icon {
+    width: 52px;
+    height: 52px;
+  }
+  .wa-float-tooltip {
+    display: none;
+  }
+}
