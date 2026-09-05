@@ -157,7 +157,7 @@ function renderizarPedido(p) {
   const waBtn = document.getElementById('whatsappSupportBtn');
   if (waBtn) {
     const msg = `Olá! Gostaria de informações sobre o meu pedido ${numPedido} do livro Tesouros em Vaso de Barro.`;
-    waBtn.href = `https://wa.me/5514999999999?text=${encodeURIComponent(msg)}`;
+    waBtn.href = `https://wa.me/5514991292490?text=${encodeURIComponent(msg)}`;
   }
 
   resultBox.classList.add('show');

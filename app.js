@@ -1344,7 +1344,7 @@ function showOrderSuccess() {
     }
 
     const msg = `Olá Ingrid! Acabei de realizar o pedido #${checkoutState.orderNumber} do livro Tesouros em Vaso de Barro para o endereço em ${checkoutState.cliente.cidade}/${checkoutState.cliente.uf}.`;
-    const waLink = `https://wa.me/5514999999999?text=${encodeURIComponent(msg)}`;
+    const waLink = `https://wa.me/5514991292490?text=${encodeURIComponent(msg)}`;
     const waBtn = document.getElementById('successWhatsappBtn');
     if (waBtn) waBtn.href = waLink;
 
