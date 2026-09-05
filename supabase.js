@@ -224,20 +224,67 @@ export async function obterMetricas() {
    CUPONS DE DESCONTO
 ════════════════════════════════════════════════ */
 
+// Cache em memória para validação instantânea de cupons já consultados (0ms)
+const cupomMemoryCache = new Map();
+
 /**
- * Valida um cupom de desconto através da RPC segura validar_cupom
+ * Valida um cupom de desconto de forma ultra-rápida via REST RPC direto com cache e fallback
  * @param {string} codigo Código digitado pelo cliente
  * @returns {Promise<{data: any, error: any}>}
  */
 export async function validarCupom(codigo) {
+  const codFormatado = String(codigo || '').trim().toUpperCase();
+  if (!codFormatado) {
+    return { data: { valido: false, mensagem: 'Código de cupom não informado.' }, error: null };
+  }
+
+  // Se já consultado recentemente nesta sessão, retorna em 0ms
+  if (cupomMemoryCache.has(codFormatado)) {
+    return { data: cupomMemoryCache.get(codFormatado), error: null };
+  }
+
+  // Tentativa 1: Fetch HTTP direto (ultrarrápido, sem overhead do SDK Supabase)
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/validar_cupom`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_codigo: codFormatado }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        cupomMemoryCache.set(codFormatado, data);
+        return { data, error: null };
+      }
+    }
+  } catch (directErr) {
+    console.warn('Fetch direto de cupom falhou ou deu timeout, usando fallback RPC:', directErr);
+  }
+
+  // Tentativa 2 (Fallback): Supabase SDK RPC
   try {
     const { data, error } = await supabase.rpc('validar_cupom', {
-      p_codigo: String(codigo || '').trim()
+      p_codigo: codFormatado
     });
 
     if (error) {
-      console.error('Erro ao validar cupom via RPC:', error);
-      return { data: { valido: false, mensagem: 'Erro de comunicação ao validar cupom.' }, error };
+      console.error('Erro ao validar cupom via RPC fallback:', error);
+      return { data: { valido: false, mensagem: 'Não foi possível validar o cupom. Tente novamente.' }, error };
+    }
+
+    if (data && typeof data === 'object') {
+      cupomMemoryCache.set(codFormatado, data);
     }
 
     return { data, error: null };

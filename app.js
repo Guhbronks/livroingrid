@@ -392,6 +392,31 @@ function initCheckoutInputs() {
       giftMsgCounter.innerText = giftMsgInput.value.length;
     });
   }
+
+  // Previne envio acidental do checkout pelo teclado mobile/desktop ao digitar cupom
+  const couponInput = document.getElementById('checkoutCouponInput');
+  if (couponInput) {
+    couponInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        aplicarCupomCheckout();
+      }
+    });
+
+    couponInput.addEventListener('input', () => {
+      const sanitized = couponInput.value.toUpperCase().replace(/\s+/g, '');
+      if (couponInput.value !== sanitized) {
+        couponInput.value = sanitized;
+      }
+      if (!sanitized) {
+        const feedback = document.getElementById('couponFeedback');
+        if (feedback && feedback.classList.contains('error')) {
+          feedback.style.display = 'none';
+        }
+      }
+    });
+  }
 }
 
 export function toggleGiftSection(isChecked) {
@@ -576,21 +601,25 @@ async function carregarPrecosDinamicos() {
 export async function aplicarCupomCheckout() {
   const input = document.getElementById('checkoutCouponInput');
   const btn = document.getElementById('btnApplyCoupon');
+  const btnRemove = document.getElementById('btnRemoveCoupon');
   const feedback = document.getElementById('couponFeedback');
   if (!input || !feedback) return;
 
-  const codigo = input.value.trim().toUpperCase();
+  const codigo = input.value.trim().toUpperCase().replace(/\s+/g, '');
   if (!codigo) {
     feedback.className = 'coupon-feedback error';
     feedback.style.display = 'block';
     feedback.innerText = 'Digite um código de cupom para aplicar.';
+    input.focus();
     return;
   }
 
+  // Feedback imediato
   if (btn) {
     btn.disabled = true;
-    btn.innerText = 'Validando...';
+    btn.innerHTML = '⏳ Validando...';
   }
+  feedback.style.display = 'none';
 
   try {
     const { data: res, error } = await validarCupom(codigo);
@@ -615,7 +644,7 @@ export async function aplicarCupomCheckout() {
       feedback.style.display = 'block';
       if (res.tipo === 'frete_gratis') {
         feedback.className = 'coupon-feedback success';
-        feedback.innerHTML = `✅ <strong>Cupom ${res.codigo} ativado!</strong> Frete Grátis aplicado (válido para Envio Normal e PAC).`;
+        feedback.innerHTML = `✅ <strong>Cupom ${res.codigo} ativado!</strong> Frete Grátis aplicado (válido para Registro Módico e PAC).`;
       } else if (res.tipo === 'porcentagem') {
         feedback.className = 'coupon-feedback success';
         feedback.innerHTML = `✅ <strong>Cupom ${res.codigo} ativado!</strong> ${res.valor}% de desconto aplicado no livro.`;
@@ -623,27 +652,76 @@ export async function aplicarCupomCheckout() {
         feedback.className = 'coupon-feedback success';
         feedback.innerHTML = `✅ <strong>Cupom ${res.codigo} ativado!</strong> R$ ${parseFloat(res.valor).toFixed(2).replace('.', ',')} de desconto aplicado.`;
       }
+
+      // Alterna botões
+      if (btn) btn.style.display = 'none';
+      if (btnRemove) btnRemove.style.display = 'inline-flex';
+      input.readOnly = true;
+
     } else {
       feedback.className = 'coupon-feedback error';
       feedback.style.display = 'block';
-      feedback.innerText = res?.mensagem || 'Cupom inválido ou expirado.';
+      feedback.innerText = res?.mensagem || 'Cupom inválido, esgotado ou expirado.';
 
       checkoutState.cupomCodigo = null;
       checkoutState.tipoCupom = null;
       checkoutState.valorCupom = 0;
       checkoutState.valorDesconto = 0;
       updateCheckoutCalculations();
+
+      if (btn) btn.style.display = 'inline-flex';
+      if (btnRemove) btnRemove.style.display = 'none';
+      input.readOnly = false;
     }
   } catch (err) {
+    console.error('Erro na validação do cupom:', err);
     feedback.className = 'coupon-feedback error';
     feedback.style.display = 'block';
-    feedback.innerText = 'Erro de comunicação ao verificar cupom.';
+    feedback.innerText = 'Erro ao verificar cupom. Verifique sua conexão e tente novamente.';
   } finally {
     if (btn) {
       btn.disabled = false;
       btn.innerText = 'Aplicar';
     }
   }
+}
+
+export function toggleCouponField() {
+  const input = document.getElementById('checkoutCouponInput');
+  if (input) {
+    input.focus();
+  }
+}
+
+export function removerCupomCheckout() {
+  const input = document.getElementById('checkoutCouponInput');
+  const btn = document.getElementById('btnApplyCoupon');
+  const btnRemove = document.getElementById('btnRemoveCoupon');
+  const feedback = document.getElementById('couponFeedback');
+
+  checkoutState.cupomCodigo = null;
+  checkoutState.tipoCupom = null;
+  checkoutState.valorCupom = 0;
+  checkoutState.valorDesconto = 0;
+
+  if (input) {
+    input.value = '';
+    input.readOnly = false;
+  }
+  if (btn) {
+    btn.style.display = 'inline-flex';
+    btn.disabled = false;
+    btn.innerText = 'Aplicar';
+  }
+  if (btnRemove) {
+    btnRemove.style.display = 'none';
+  }
+  if (feedback) {
+    feedback.style.display = 'none';
+    feedback.innerText = '';
+  }
+
+  updateCheckoutCalculations();
 }
 
 export function updateCheckoutCalculations() {
@@ -774,7 +852,10 @@ export function openCheckout() {
   const m = document.getElementById('checkoutModal');
   if (m) {
     m.classList.add('open');
+    document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
+    const waBtn = document.getElementById('waFloatBtn');
+    if (waBtn) waBtn.style.display = 'none';
     goToStep1();
   }
 }
@@ -784,7 +865,10 @@ export function closeCheckout(e) {
   const m = document.getElementById('checkoutModal');
   if (m) {
     m.classList.remove('open');
+    document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
+    const waBtn = document.getElementById('waFloatBtn');
+    if (waBtn) waBtn.style.display = '';
   }
 }
 
@@ -1213,34 +1297,47 @@ export async function solicitarGeracaoPix() {
 export function copyPixCode() {
   const input = document.getElementById('pixCopyInput');
   const btn = document.getElementById('btnCopyPix');
-  if (!input) return;
+  const code = input ? input.value : '';
+  if (!code) return;
 
-  input.select();
-  input.setSelectionRange(0, 99999);
+  const setFeedback = () => {
+    if (btn) {
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = '✅ Código PIX Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = origHtml;
+        btn.classList.remove('copied');
+      }, 2500);
+    }
+  };
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(input.value).then(() => {
-      if (btn) {
-        const orig = btn.innerText;
-        btn.innerText = '✅ Copiado!';
-        setTimeout(() => { btn.innerText = orig; }, 2000);
-      }
-    }).catch(() => {
-      document.execCommand('copy');
-      if (btn) {
-        const orig = btn.innerText;
-        btn.innerText = '✅ Copiado!';
-        setTimeout(() => { btn.innerText = orig; }, 2000);
-      }
+    navigator.clipboard.writeText(code).then(setFeedback).catch(() => {
+      fallbackCopyText(code);
+      setFeedback();
     });
   } else {
-    document.execCommand('copy');
-    if (btn) {
-      const orig = btn.innerText;
-      btn.innerText = '✅ Copiado!';
-      setTimeout(() => { btn.innerText = orig; }, 2000);
-    }
+    fallbackCopyText(code);
+    setFeedback();
   }
+}
+
+function fallbackCopyText(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.top = '-9999px';
+  textArea.style.left = '-9999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+  } catch (err) {
+    console.error('Fallback copy error:', err);
+  }
+  document.body.removeChild(textArea);
 }
 
 let pixPollingInterval = null;
@@ -1407,6 +1504,8 @@ window.finalizeCardOrder = finalizeCardOrder;
 window.handleCheckoutCepSearch = handleCheckoutCepSearch;
 window.updateCheckoutCalculations = updateCheckoutCalculations;
 window.aplicarCupomCheckout = aplicarCupomCheckout;
+window.removerCupomCheckout = removerCupomCheckout;
+window.toggleCouponField = toggleCouponField;
 window.toggleGiftSection = toggleGiftSection;
 window.toggleGiftAddressFields = toggleGiftAddressFields;
 window.handleGiftCepSearch = handleGiftCepSearch;
