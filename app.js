@@ -1175,6 +1175,7 @@ export async function solicitarGeracaoPix() {
       if (qrImg) qrImg.src = pixResult.qrCodeImgUrl;
 
       if (checkoutState.orderId && pixResult.paymentId) {
+        checkoutState.mercadoPagoId = pixResult.paymentId;
         await atualizarPedido(checkoutState.orderId, {
           mercado_pago_id: pixResult.paymentId,
           metodo_pagamento: 'pix'
@@ -1253,7 +1254,8 @@ function iniciarPollingPagamento() {
         checkoutState.orderId,
         checkoutState.orderNumber,
         checkoutState.cliente.telefone,
-        checkoutState.cliente.email
+        checkoutState.cliente.email,
+        checkoutState.mercadoPagoId
       );
       if (status === 'aprovado' || status === 'pago') {
         console.log('⚡ Pagamento confirmado via auto-polling!');
@@ -1312,7 +1314,8 @@ export async function verificarStatusPixCliente() {
       checkoutState.orderId,
       checkoutState.orderNumber,
       checkoutState.cliente.telefone,
-      checkoutState.cliente.email
+      checkoutState.cliente.email,
+      checkoutState.mercadoPagoId
     );
 
     if (status === 'aprovado' || status === 'pago') {

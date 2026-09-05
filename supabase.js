@@ -391,14 +391,32 @@ export async function obterConfiguracoes() {
 
 /**
  * Consulta o status de pagamento de um pedido usando a RPC buscar_pedido_rastreio
+ * e consulta direta em tempo real ao gateway Mercado Pago
  * @param {string} orderId 
  * @param {string|number} orderNumber 
  * @param {string} telefone 
  * @param {string} email 
+ * @param {string} mercadoPagoId 
  * @returns {Promise<string>} 'aprovado' | 'pago' | 'pendente' | 'cancelado'
  */
-export async function consultarStatusPedido(orderId, orderNumber, telefone, email) {
+export async function consultarStatusPedido(orderId, orderNumber, telefone, email, mercadoPagoId) {
   try {
+    // 0. Se temos o mercadoPagoId, consulta ativamente a Edge Function do webhook
+    // Isso garante sincronização instantânea com a API do Mercado Pago sem depender de atraso de notificação
+    if (mercadoPagoId) {
+      try {
+        const webhookRes = await fetch(`https://otsbdtoxpxlvordvzjjq.supabase.co/functions/v1/mercadopago-webhook?data.id=${mercadoPagoId}&type=payment`);
+        if (webhookRes.ok) {
+          const whData = await webhookRes.json();
+          if (whData && (whData.status === 'aprovado' || whData.status === 'pago')) {
+            return 'aprovado';
+          }
+        }
+      } catch (whErr) {
+        // segue para consulta no banco
+      }
+    }
+
     // 1. Tenta buscar pelo número do pedido
     if (orderNumber) {
       const { data, error } = await supabase.rpc('buscar_pedido_rastreio', {
