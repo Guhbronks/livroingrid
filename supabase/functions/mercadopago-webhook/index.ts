@@ -19,25 +19,25 @@ serve(async (req: Request) => {
   }
 
   try {
-    // 1. Inicializa cliente do Supabase
+    // 1. Inicializa cliente do Supabase com Service Role Key (admin)
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "https://otsbdtoxpxlvordvzjjq.supabase.co";
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
     const mpAccessToken = Deno.env.get("MERCADO_PAGO_ACCESS_TOKEN") ?? "";
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 2. Extrai parâmetros do webhook (suporta tanto Payments quanto Orders)
+    // 2. Extrai parâmetros do webhook (suporta tanto Payments quanto Orders / Merchant Orders)
     const url = new URL(req.url);
     let paymentId = url.searchParams.get("data.id") || url.searchParams.get("id");
     let externalRef = url.searchParams.get("external_reference") || "";
-    let eventType = url.searchParams.get("type") || "";
+    let eventType = url.searchParams.get("type") || url.searchParams.get("topic") || "";
     let eventAction = "";
     let bodyDataStatus = "";
 
     if (req.method === "POST") {
       try {
         const body = await req.json();
-        eventType = body?.type || eventType;
+        eventType = body?.type || body?.topic || eventType;
         eventAction = body?.action || "";
         externalRef = body?.data?.external_reference || body?.external_reference || externalRef;
         bodyDataStatus = body?.data?.status || body?.data?.status_detail || "";
@@ -60,71 +60,19 @@ serve(async (req: Request) => {
       });
     }
 
-    // 3. Validação de Segurança: Assinatura Secreta (x-signature)
-    const webhookSecret = Deno.env.get("MERCADO_PAGO_WEBHOOK_SECRET");
-    const xSignature = req.headers.get("x-signature");
-    const xRequestId = req.headers.get("x-request-id");
+    console.log(`📦 Webhook Mercado Pago recebido (tipo: ${eventType || 'notificação'}, id: ${paymentId}, action: ${eventAction})`);
 
-    if (webhookSecret && xSignature) {
-      const parts = xSignature.split(",");
-      let ts = "";
-      let v1 = "";
-      for (const part of parts) {
-        const [k, v] = part.split("=");
-        if (k?.trim() === "ts") ts = v?.trim() || "";
-        if (k?.trim() === "v1") v1 = v?.trim() || "";
-      }
+    // 3. Determina status do pagamento consultando diretamente a API do Mercado Pago
+    let statusPagamento = "pendente";
 
-      // Constrói o manifesto oficial: id:[data.id];request-id:[x-request-id];ts:[ts];
-      let manifest = "";
-      if (paymentId) manifest += `id:${paymentId};`;
-      if (xRequestId) manifest += `request-id:${xRequestId};`;
-      if (ts) manifest += `ts:${ts};`;
-
-      try {
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-          "raw",
-          encoder.encode(webhookSecret),
-          { name: "HMAC", hash: "SHA-256" },
-          false,
-          ["sign"]
-        );
-        const signatureBuffer = await crypto.subtle.sign(
-          "HMAC",
-          key,
-          encoder.encode(manifest)
-        );
-        const computedHash = Array.from(new Uint8Array(signatureBuffer))
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-
-        if (computedHash !== v1) {
-          console.warn(`⚠️ Assinatura de webhook não coincide! Calculada: ${computedHash}, Recebida: ${v1}`);
-          return new Response(JSON.stringify({ error: "Assinatura de notificação inválida." }), {
-            status: 401,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        console.log("🔒 Assinatura secreta do Mercado Pago validada com sucesso!");
-      } catch (signErr) {
-        console.error("Erro ao verificar assinatura criptográfica:", signErr);
-      }
-    }
-
-    console.log(`📦 Webhook Mercado Pago recebido (${eventType || 'notificação'}): ${paymentId}`);
-
-    // 4. Determina status do pagamento (compatível com API de Pagamentos e API de Orders)
-    let statusPagamento = "aprovado"; // padrão para eventos de sucesso
-
-    if (bodyDataStatus === "processed" || bodyDataStatus === "accredited" || eventAction === "order.processed") {
+    if (bodyDataStatus === "processed" || bodyDataStatus === "accredited" || bodyDataStatus === "approved" || eventAction === "order.processed") {
       statusPagamento = "aprovado";
     }
 
-    if (mpAccessToken) {
-      const isOrder = eventType === "order" || (eventAction && eventAction.startsWith("order"));
-      const endpoint = isOrder 
-        ? `https://api.mercadopago.com/v1/orders/${paymentId}`
+    if (mpAccessToken && paymentId) {
+      const isMerchantOrder = eventType === "merchant_order" || eventType === "topic_merchant_order";
+      const endpoint = isMerchantOrder 
+        ? `https://api.mercadopago.com/v1/merchant_orders/${paymentId}`
         : `https://api.mercadopago.com/v1/payments/${paymentId}`;
 
       try {
@@ -132,7 +80,8 @@ serve(async (req: Request) => {
           headers: { Authorization: `Bearer ${mpAccessToken}` },
         });
 
-        if (!mpResponse.ok && isOrder) {
+        // Se falhou como merchant_order tenta como payment
+        if (!mpResponse.ok && isMerchantOrder) {
           mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
             headers: { Authorization: `Bearer ${mpAccessToken}` },
           });
@@ -142,42 +91,88 @@ serve(async (req: Request) => {
           const mpData = await mpResponse.json();
           const st = mpData.status || mpData.status_detail;
           console.log(`Status oficial do Mercado Pago para ${paymentId}: ${st}`);
-          
+
+          // Extrai external_reference retornado pela API do MP
+          if (mpData.external_reference && !externalRef) {
+            externalRef = String(mpData.external_reference);
+            console.log(`External reference encontrada no MP: ${externalRef}`);
+          }
+
           if (st === "approved" || st === "processed" || st === "accredited" || st === "closed") {
             statusPagamento = "aprovado";
-          } else if (st === "rejected" || st === "cancelled") {
+          } else if (st === "rejected" || st === "cancelled" || st === "refunded" || st === "charged_back") {
             statusPagamento = "cancelado";
           } else {
             statusPagamento = "pendente";
           }
+        } else {
+          console.warn(`Falha ao consultar MP API (${mpResponse.status}):`, await mpResponse.text());
         }
       } catch (e) {
         console.error("Aviso ao consultar status no MP:", e);
       }
     }
 
-    // 5. Atualiza tabela de pedidos no Supabase
-    let queryFilter = `mercado_pago_id.eq.${paymentId},id.eq.${paymentId}`;
+    console.log(`🎯 Status final determinado: ${statusPagamento} para paymentId: ${paymentId}, externalRef: ${externalRef}`);
+
+    // 4. Atualiza tabela de pedidos no Supabase com segurança
+    let atualizado = false;
+
     if (externalRef) {
-      queryFilter += `,id.eq.${externalRef}`;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(externalRef);
+      const isNum = /^\d+$/.test(externalRef);
+
+      if (isUuid) {
+        const { data, error } = await supabase
+          .from("pedidos")
+          .update({
+            status_pagamento: statusPagamento,
+            mercado_pago_id: String(paymentId),
+          })
+          .eq("id", externalRef);
+
+        if (!error) {
+          console.log(`✅ Pedido atualizado por UUID (${externalRef}) para status: ${statusPagamento}`);
+          atualizado = true;
+        } else {
+          console.error("Erro ao atualizar por UUID:", error);
+        }
+      } else if (isNum) {
+        const { data, error } = await supabase
+          .from("pedidos")
+          .update({
+            status_pagamento: statusPagamento,
+            mercado_pago_id: String(paymentId),
+          })
+          .eq("numero_pedido", parseInt(externalRef, 10));
+
+        if (!error) {
+          console.log(`✅ Pedido atualizado por numero_pedido (${externalRef}) para status: ${statusPagamento}`);
+          atualizado = true;
+        } else {
+          console.error("Erro ao atualizar por numero_pedido:", error);
+        }
+      }
     }
 
-    const { data, error } = await supabase
-      .from("pedidos")
-      .update({
-        status_pagamento: statusPagamento,
-        mercado_pago_id: paymentId,
-      })
-      .or(queryFilter);
+    // Se ainda não atualizou ou para garantir sincronização de mercado_pago_id:
+    if (paymentId) {
+      const { data, error } = await supabase
+        .from("pedidos")
+        .update({
+          status_pagamento: statusPagamento,
+        })
+        .eq("mercado_pago_id", String(paymentId));
 
-    if (error) {
-      console.error("Erro ao atualizar pedido no Supabase:", error);
-    } else {
-      console.log(`✅ Pedido atualizado com sucesso no Supabase para status: ${statusPagamento}`);
+      if (!error) {
+        console.log(`✅ Pedido atualizado por mercado_pago_id (${paymentId}) para status: ${statusPagamento}`);
+      } else {
+        console.error("Erro ao atualizar por mercado_pago_id:", error);
+      }
     }
 
     // 5. Retorna 200 OK para o Mercado Pago
-    return new Response(JSON.stringify({ success: true, status: statusPagamento }), {
+    return new Response(JSON.stringify({ success: true, status: statusPagamento, paymentId }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -1,4 +1,4 @@
-import { supabase, salvarPedido, atualizarPedido, validarCupom, obterConfiguracoes, atualizarConfiguracao } from './supabase.js';
+import { supabase, salvarPedido, atualizarPedido, validarCupom, obterConfiguracoes, atualizarConfiguracao, consultarStatusPedido } from './supabase.js';
 import { gerarPixMercadoPago, inicializarCardPaymentBrick } from './mercadopago.js';
 
 // Estado global do checkout
@@ -1181,8 +1181,9 @@ export async function solicitarGeracaoPix() {
         });
       }
 
-      // Conecta escuta em tempo real para aprovação automática do webhook
+      // Conecta escuta em tempo real e auto-polling a cada 2.5s para confirmação automática
       iniciarEscutaPagamentoRealtime();
+      iniciarPollingPagamento();
 
     } else {
       if (initialBox) initialBox.style.display = 'flex';
@@ -1241,6 +1242,37 @@ export function copyPixCode() {
   }
 }
 
+let pixPollingInterval = null;
+
+function iniciarPollingPagamento() {
+  pararPollingPagamento();
+  pixPollingInterval = setInterval(async () => {
+    if (!checkoutState.orderId && !checkoutState.orderNumber) return;
+    try {
+      const status = await consultarStatusPedido(
+        checkoutState.orderId,
+        checkoutState.orderNumber,
+        checkoutState.cliente.telefone,
+        checkoutState.cliente.email
+      );
+      if (status === 'aprovado' || status === 'pago') {
+        console.log('⚡ Pagamento confirmado via auto-polling!');
+        pararPollingPagamento();
+        showOrderSuccess();
+      }
+    } catch (e) {
+      // continua tentando silenciosamente
+    }
+  }, 2500);
+}
+
+function pararPollingPagamento() {
+  if (pixPollingInterval) {
+    clearInterval(pixPollingInterval);
+    pixPollingInterval = null;
+  }
+}
+
 /**
  * Escuta atualização em tempo real quando o pagamento for aprovado pelo webhook
  */
@@ -1255,6 +1287,7 @@ function iniciarEscutaPagamentoRealtime() {
       (change) => {
         if (change.new && (change.new.status_pagamento === 'aprovado' || change.new.status_pagamento === 'pago')) {
           console.log('⚡ Pagamento confirmado em tempo real pelo banco!');
+          pararPollingPagamento();
           showOrderSuccess();
         }
       }
@@ -1275,11 +1308,15 @@ export async function verificarStatusPixCliente() {
   }
 
   try {
-    const { data, error } = await supabase.rpc('consultar_status_pedido', {
-      p_id: checkoutState.orderId
-    });
+    const status = await consultarStatusPedido(
+      checkoutState.orderId,
+      checkoutState.orderNumber,
+      checkoutState.cliente.telefone,
+      checkoutState.cliente.email
+    );
 
-    if (data && (data.status_pagamento === 'aprovado' || data.status_pagamento === 'pago')) {
+    if (status === 'aprovado' || status === 'pago') {
+      pararPollingPagamento();
       showOrderSuccess();
       return;
     }
@@ -1326,6 +1363,7 @@ export async function finalizeCardOrder(e) {
 }
 
 function showOrderSuccess() {
+  pararPollingPagamento();
   // Esconde todas as panes de etapas
   document.getElementById('stepPane1')?.classList.remove('active');
   document.getElementById('stepPane2')?.classList.remove('active');

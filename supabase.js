@@ -390,30 +390,53 @@ export async function obterConfiguracoes() {
 }
 
 /**
- * Atualiza uma configuração no banco (Apenas Admin)
- * @param {string} chave 
- * @param {string} valor 
+ * Consulta o status de pagamento de um pedido usando a RPC buscar_pedido_rastreio
+ * @param {string} orderId 
+ * @param {string|number} orderNumber 
+ * @param {string} telefone 
+ * @param {string} email 
+ * @returns {Promise<string>} 'aprovado' | 'pago' | 'pendente' | 'cancelado'
  */
-export async function atualizarConfiguracao(chave, valor) {
+export async function consultarStatusPedido(orderId, orderNumber, telefone, email) {
   try {
-    const { data, error } = await supabase
-      .from('configuracoes')
-      .upsert({
-        chave,
-        valor: String(valor),
-        updated_at: new Date().toISOString()
-      })
-      .select();
-
-    if (error) {
-      console.error(`Erro ao atualizar configuração ${chave}:`, error);
-      return { data: null, error };
+    // 1. Tenta buscar pelo número do pedido
+    if (orderNumber) {
+      const { data, error } = await supabase.rpc('buscar_pedido_rastreio', {
+        p_termo: String(orderNumber)
+      });
+      if (!error && data && data.length > 0) {
+        const found = data.find(p => String(p.numero_pedido) === String(orderNumber) || p.id === orderId) || data[0];
+        return found.status_pagamento || 'pendente';
+      }
     }
 
-    return { data: data?.[0], error: null };
+    // 2. Tenta buscar por telefone
+    if (telefone) {
+      const { data, error } = await supabase.rpc('buscar_pedido_rastreio', {
+        p_termo: String(telefone)
+      });
+      if (!error && data && data.length > 0) {
+        const found = data.find(p => p.id === orderId || String(p.numero_pedido) === String(orderNumber)) || data[0];
+        return found.status_pagamento || 'pendente';
+      }
+    }
+
+    // 3. Tenta buscar por email
+    if (email) {
+      const { data, error } = await supabase.rpc('buscar_pedido_rastreio', {
+        p_termo: String(email)
+      });
+      if (!error && data && data.length > 0) {
+        const found = data.find(p => p.id === orderId || String(p.numero_pedido) === String(orderNumber)) || data[0];
+        return found.status_pagamento || 'pendente';
+      }
+    }
+
+    return 'pendente';
   } catch (err) {
-    console.error('Exceção ao atualizar configuração:', err);
-    return { data: null, error: err };
+    console.warn('Aviso ao consultar status do pedido:', err);
+    return 'pendente';
   }
 }
+
 

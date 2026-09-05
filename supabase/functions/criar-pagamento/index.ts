@@ -195,6 +195,38 @@ Deno.serve(async (req: Request) => {
 
     const txData = mpData.point_of_interaction?.transaction_data;
 
+    // Atualiza imediatamente o pedido no Supabase com o ID do pagamento gerado
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "https://otsbdtoxpxlvordvzjjq.supabase.co";
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    if (supabaseUrl && supabaseKey && pedidoId) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(pedidoId));
+        const isNum = /^\d+$/.test(String(pedidoId));
+
+        if (isUuid) {
+          await supabase
+            .from("pedidos")
+            .update({
+              metodo_pagamento: "pix",
+              mercado_pago_id: String(mpData.id)
+            })
+            .eq("id", pedidoId);
+        } else if (isNum) {
+          await supabase
+            .from("pedidos")
+            .update({
+              metodo_pagamento: "pix",
+              mercado_pago_id: String(mpData.id)
+            })
+            .eq("numero_pedido", parseInt(String(pedidoId), 10));
+        }
+        console.log(`[criar-pagamento] Pedido ${pedidoId} vinculado ao Mercado Pago ID: ${mpData.id}`);
+      } catch (dbErr) {
+        console.error("Aviso ao vincular MP ID ao pedido no banco:", dbErr);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         sucesso: true,
