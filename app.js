@@ -1159,7 +1159,7 @@ export async function solicitarGeracaoPix() {
       bairro: checkoutState.cliente.bairro,
       cidade: checkoutState.cliente.cidade,
       uf: checkoutState.cliente.uf,
-      valorTotal: checkoutState.valorTotal,
+      valorTotal: parseFloat(checkoutState.valorTotal.toFixed(2)),
       quantidade: checkoutState.quantidade
     });
 

@@ -21,11 +21,18 @@ Deno.serve(async (req: Request) => {
   try {
     const mpAccessToken = Deno.env.get("MERCADO_PAGO_ACCESS_TOKEN");
     const body = await req.json();
-    const { pedidoId, cliente, valorTotal, quantidade, metodo, cardFormData } = body;
+    const { pedidoId, cliente, quantidade, metodo, cardFormData } = body;
 
-    if (!valorTotal || !cliente) {
+    // Sanitiza valorTotal: aceita número, string com ponto ou vírgula
+    const rawValor = body.valorTotal;
+    const valorTotalStr = String(rawValor ?? '').replace(',', '.');
+    const valorTotal = parseFloat(valorTotalStr);
+
+    console.log('[criar-pagamento] valorTotal recebido:', rawValor, '→ parseado:', valorTotal);
+
+    if (!valorTotal || isNaN(valorTotal) || valorTotal <= 0 || !cliente) {
       return new Response(
-        JSON.stringify({ sucesso: false, error: "Dados incompletos do pedido ou cliente." }),
+        JSON.stringify({ sucesso: false, error: `Dados incompletos: valorTotal inválido (${rawValor}) ou cliente ausente.` }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
